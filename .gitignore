@@ -1,0 +1,39 @@
+# =====================
+# Build output
+# =====================
+Debug/
+Release/
+build/
+
+# =====================
+# STM32CubeIDE / Eclipse
+# =====================
+.settings/
+.cproject
+.project
+*.launch
+
+# =====================
+# CubeMX generated
+# =====================
+.mxproject
+
+# =====================
+# User / OS
+# =====================
+*.swp
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+
+# =====================
+# Toolchain
+# =====================
+*.o
+*.d
+*.elf
+*.map
+*.hex
+*.bin
+

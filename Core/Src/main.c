@@ -199,8 +199,9 @@ int initGPIOA5(){
 int delay(const uint32_t timer){
 	uint32_t temp = timer;
 	if(temp>0){
-		while(temp>0){
+		while(temp--){
 			__asm volatile ("nop");
+
 		}
 	}
 	else{
@@ -240,7 +241,7 @@ int main(void)
   {
     /* USER CODE END WHILE */
 	  GPIOA->ODR^=GPIO_ODR_OD5_Msk;
-	  delay(5000);
+	  delay(1000000);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

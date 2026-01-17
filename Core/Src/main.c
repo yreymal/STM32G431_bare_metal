@@ -116,6 +116,21 @@ static inline int isBitZero(volatile const uint32_t *reg, const uint32_t mask, c
 	return 0;
 }
 
+int configureUserButton(){
+
+	/* user button is connected to port C, pin 13 */
+	/* enabling clock on port C */
+	RCC->AHB2ENR|=RCC_AHB2ENR_GPIOCEN_Msk;
+	/* configure pin 13 as input without pulling up/down,
+	 * because there is HW pull down resistor for the button on board
+	 * |00| - Input mode */
+	GPIOC->MODER&=(~GPIO_MODER_MODE13_Msk);
+	/* it's important to turn off pull up/down, because of external HW pull down
+	 * 00: No pull-up, pull-down */
+	GPIOC->PUPDR&=(~GPIO_PUPDR_PUPD13_Msk);
+	return 0;
+}
+
 int ConfigureClock(){
 	//HSI
 	/* for safety reasons assure that we use HSI */
@@ -222,6 +237,7 @@ int main(void)
 
   /* USER CODE BEGIN Init */
     initGPIOA5();
+    configureUserButton();
   /* USER CODE END Init */
 
 
@@ -240,8 +256,14 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  GPIOA->ODR^=GPIO_ODR_OD5_Msk;
-	  delay(1000000);
+
+
+	  if(GPIOC->IDR<<GPIO_IDR_ID13_Pos){
+		  delay(1000000);
+		  GPIOA->ODR^=GPIO_ODR_OD5_Msk;
+		  delay(1000000);
+	  }
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

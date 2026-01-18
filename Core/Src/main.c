@@ -60,7 +60,7 @@
   * @brief  The application entry point.
   * @retval int
   */
-static inline int isBitSet(volatile const uint32_t *reg, const uint32_t mask, const  uint32_t timeout){
+static inline status_t isBitSet(volatile const uint32_t *reg, const uint32_t mask, const  uint32_t timeout){
 
 	uint32_t temp = timeout;
 	/* as soon as REG bits  to msk's bits are NOT 0, loop breaks */
@@ -72,14 +72,14 @@ static inline int isBitSet(volatile const uint32_t *reg, const uint32_t mask, co
 	while(((*reg) & mask) ==0u ){
 		--temp;
 		if(temp<=0){
-			return -1;
+			return WRONG_TIMEOUT;
 		}
 
 	}
-	return 0;
+	return STATUS_OK;
 }
 
-static inline int isValueSet(volatile const uint32_t *reg, const uint32_t mask, const  uint32_t timeout, const uint32_t value){
+static inline status_t isValueSet(volatile const uint32_t *reg, const uint32_t mask, const  uint32_t timeout, const uint32_t value){
 
 	uint32_t temp = timeout;
 	/* as soon as REG bits  to msk's bits are NOT 0, loop breaks */
@@ -91,11 +91,11 @@ static inline int isValueSet(volatile const uint32_t *reg, const uint32_t mask, 
 	while(((*reg) & mask) == value ){
 		--temp;
 		if(temp<=0){
-			return -3;
+			return WRONG_TIMEOUT;
 		}
 
 	}
-	return 0;
+	return STATUS_OK;
 }
 
 static inline int isBitZero(volatile const uint32_t *reg, const uint32_t mask, const uint32_t timeout){
@@ -109,11 +109,11 @@ static inline int isBitZero(volatile const uint32_t *reg, const uint32_t mask, c
 	while( ((*reg) & mask)!=0u ){
 		--temp;
 		if(temp<=0){
-			return -2;
+			return WRONG_TIMEOUT;
 		}
 	}
 
-	return 0;
+	return STATUS_OK;
 }
 
 int configureUserButton(){
@@ -131,28 +131,36 @@ int configureUserButton(){
 	return 0;
 }
 
-int ConfigureClock(){
+status_t ConfigureClock(){
+	/* function return check */
+	 status_t st = STATUS_OK;
+	 return st;
 	//HSI
 	/* for safety reasons assure that we use HSI */
 	RCC->CR|=(1<<RCC_CR_HSION_Pos);
 	/* wait until the rdy bit is set */
-	isBitSet(&RCC->CR, RCC_CR_HSIRDY_Msk, 0x5000);
+	st = isBitSet(&RCC->CR, RCC_CR_HSIRDY_Msk, 0x5000);
+	if(st!=STATUS_OK)
+		return st;
 	/* switch system clock to work from  HSI16 */
 	RCC->CFGR = (RCC->CFGR & (~RCC_CFGR_SW_Msk)) | (RCC_CFGR_SW_HSI);
 	/* wait until the clock's switch status is HSI*/
-	isValueSet(&RCC->CFGR, RCC_CFGR_SWS_Msk, 0x5000, RCC_CFGR_SWS_HSI);
-
+	st = isValueSet(&RCC->CFGR, RCC_CFGR_SWS_Msk, 0x5000, RCC_CFGR_SWS_HSI);
+	if(st!=STATUS_OK)
+		return st;
 	//HSE
 	/* turning ON HSE */
 	RCC->CR|=(1<<RCC_CR_HSEON_Pos);
 	/* wait until the rdy bit is set */
-	isBitSet(&RCC->CR, RCC_CR_HSERDY_Msk, 0x5000);
-
+	st = isBitSet(&RCC->CR, RCC_CR_HSERDY_Msk, 0x5000);
+	if(st!=STATUS_OK)
+		return st;
 	//PLL
 	/* turning off PLL before tailor it */
 	RCC->CR&=(~RCC_CR_PLLON_Msk);
-	isBitZero(&RCC->CR,RCC_CR_PLLRDY_Msk,0x5000);
-
+	st = isBitZero(&RCC->CR,RCC_CR_PLLRDY_Msk,0x5000);
+	if(st!=STATUS_OK)
+		return st;
 	/* configure Flash waiting states before configurating PLL */
 	/* clean latency bits */
 	FLASH->ACR&=(~FLASH_ACR_LATENCY_Msk);
@@ -179,18 +187,21 @@ int ConfigureClock(){
 
    /*turning ON PLL and wait for PLLRDY flag set as 1*/
 	RCC->CR|=(1<<RCC_CR_PLLON_Pos);
-	isBitSet(&RCC->CR,RCC_CR_PLLRDY_Msk,0x5000);
-
-  /* switch SYSCL to PLL */
-  RCC->CFGR&=(~RCC_CFGR_SW_Msk);
-  RCC->CFGR|=(RCC_CFGR_SW_PLL<<RCC_CFGR_SW_Pos);
-  isValueSet(&RCC->CFGR,RCC_CFGR_SWS_Msk, 0x5000,0b11u);
-
-  /*turning off HSI */
-  RCC->CR&=(~RCC_CR_HSION_Pos);
-  isBitZero(&RCC->CR,RCC_CR_HSIRDY,0x5000);
-
-return 0;
+	st = isBitSet(&RCC->CR,RCC_CR_PLLRDY_Msk,0x5000);
+	if(st!=STATUS_OK)
+		return st;
+	/* switch SYSCL to PLL */
+	RCC->CFGR&=(~RCC_CFGR_SW_Msk);
+	RCC->CFGR|=(RCC_CFGR_SW_PLL<<RCC_CFGR_SW_Pos);
+	st = isValueSet(&RCC->CFGR,RCC_CFGR_SWS_Msk, 0x5000,0b11u);
+	if(st!=STATUS_OK)
+		return st;
+	/*turning off HSI */
+	RCC->CR&=(~RCC_CR_HSION_Pos);
+	st = isBitZero(&RCC->CR,RCC_CR_HSIRDY,0x5000);
+	if(st!=STATUS_OK)
+		return st;
+return STATUS_OK;
 }
 
 int initGPIOA5(){
@@ -220,15 +231,17 @@ int delay(const uint32_t timer){
 		}
 	}
 	else{
-		return -5;
+		return WRONG_TIMEOUT;
 	}
 	return 0;
 }
 int main(void)
 {
-
+   status_t st = STATUS_OK;
   /* USER CODE BEGIN 1 */
-	ConfigureClock();
+	st = ConfigureClock();
+	if(st!=STATUS_OK)
+		return st;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -236,8 +249,12 @@ int main(void)
 
 
   /* USER CODE BEGIN Init */
-    initGPIOA5();
-    configureUserButton();
+    st = initGPIOA5();
+	if(st!=STATUS_OK)
+		return st;
+    st = configureUserButton();
+	if(st!=STATUS_OK)
+		return st;
   /* USER CODE END Init */
 
 

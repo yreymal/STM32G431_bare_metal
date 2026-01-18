@@ -32,7 +32,12 @@ extern "C" {
 #include <stm32g431xx.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+ typedef enum{
+	STATUS_OK = 0,
+	WRONG_TIMEOUT = -1,
+	CLOCK_ERROR = -2,
 
+}status_t;
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

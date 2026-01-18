@@ -63,6 +63,9 @@
 static inline status_t isBitSet(volatile const uint32_t *reg, const uint32_t mask, const  uint32_t timeout){
 
 	uint32_t temp = timeout;
+	if(temp<=0){
+		return WRONG_TIMEOUT;
+			}
 	/* as soon as REG bits  to msk's bits are NOT 0, loop breaks */
 	/* REG  0b0101001|1|110 /
 	 *         &(AND)
@@ -72,7 +75,7 @@ static inline status_t isBitSet(volatile const uint32_t *reg, const uint32_t mas
 	while(((*reg) & mask) ==0u ){
 		--temp;
 		if(temp<=0){
-			return WRONG_TIMEOUT;
+			return BIT_FLAG_IS_ZERO;
 		}
 
 	}
@@ -82,16 +85,21 @@ static inline status_t isBitSet(volatile const uint32_t *reg, const uint32_t mas
 static inline status_t isValueSet(volatile const uint32_t *reg, const uint32_t mask, const  uint32_t timeout, const uint32_t value){
 
 	uint32_t temp = timeout;
-	/* as soon as REG bits  to msk's bits are NOT 0, loop breaks */
+	if(temp<=0){
+			return WRONG_TIMEOUT;
+				}
+	/* check if bits after mask equal to gave value */
 	/* REG  0b0101001|10|10 /
 	 *         &(AND)
 	 * mask 0b0000000|11|00/
 	 * result is     |10|
 	 */
-	while(((*reg) & mask) == value ){
+
+	while(((*reg) & mask) != value ){
+		uint32_t debug = ((*reg) & mask);
 		--temp;
 		if(temp<=0){
-			return WRONG_TIMEOUT;
+			return MSK_REG_VAL_DOESNT_MATCH;
 		}
 
 	}
@@ -106,10 +114,14 @@ static inline int isBitZero(volatile const uint32_t *reg, const uint32_t mask, c
 	 * result is     |0|
 	 */
 	uint32_t temp = timeout;
+	if(temp<=0){
+			return WRONG_TIMEOUT;
+				}
 	while( ((*reg) & mask)!=0u ){
+		uint32_t debug = ((*reg) & mask);
 		--temp;
 		if(temp<=0){
-			return WRONG_TIMEOUT;
+			return BIT_ISNT_ZERO;
 		}
 	}
 
@@ -134,7 +146,6 @@ int configureUserButton(){
 status_t ConfigureClock(){
 	/* function return check */
 	 status_t st = STATUS_OK;
-	 return st;
 	//HSI
 	/* for safety reasons assure that we use HSI */
 	RCC->CR|=(1<<RCC_CR_HSION_Pos);
@@ -145,7 +156,7 @@ status_t ConfigureClock(){
 	/* switch system clock to work from  HSI16 */
 	RCC->CFGR = (RCC->CFGR & (~RCC_CFGR_SW_Msk)) | (RCC_CFGR_SW_HSI);
 	/* wait until the clock's switch status is HSI*/
-	st = isValueSet(&RCC->CFGR, RCC_CFGR_SWS_Msk, 0x5000, RCC_CFGR_SWS_HSI);
+	st = isValueSet(&RCC->CFGR, RCC_CFGR_SWS_Msk, 0x1000, RCC_CFGR_SWS_HSI);
 	if(st!=STATUS_OK)
 		return st;
 	//HSE
@@ -193,15 +204,15 @@ status_t ConfigureClock(){
 	/* switch SYSCL to PLL */
 	RCC->CFGR&=(~RCC_CFGR_SW_Msk);
 	RCC->CFGR|=(RCC_CFGR_SW_PLL<<RCC_CFGR_SW_Pos);
-	st = isValueSet(&RCC->CFGR,RCC_CFGR_SWS_Msk, 0x5000,0b11u);
+	st = isValueSet(&RCC->CFGR,RCC_CFGR_SWS_Msk, 0x5000, RCC_CFGR_SWS_PLL);
 	if(st!=STATUS_OK)
 		return st;
 	/*turning off HSI */
-	RCC->CR&=(~RCC_CR_HSION_Pos);
-	st = isBitZero(&RCC->CR,RCC_CR_HSIRDY,0x5000);
+	RCC->CR&=(~RCC_CR_HSION_Msk);
+	st = isBitZero(&RCC->CR,RCC_CR_HSIRDY_Msk,0x5000);
 	if(st!=STATUS_OK)
 		return st;
-return STATUS_OK;
+return st;
 }
 
 int initGPIOA5(){

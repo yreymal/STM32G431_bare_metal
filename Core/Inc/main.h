@@ -36,6 +36,9 @@ extern "C" {
 	STATUS_OK = 0,
 	WRONG_TIMEOUT = -1,
 	CLOCK_ERROR = -2,
+	BIT_FLAG_IS_ZERO = -3,
+	BIT_ISNT_ZERO = -4,
+	MSK_REG_VAL_DOESNT_MATCH = -5
 
 }status_t;
 /* USER CODE END Includes */

@@ -26,6 +26,7 @@
 extern "C" {
 #endif
 
+#define DEBUG_MODE
 /* Includes ------------------------------------------------------------------*/
 //#include "stm32g4xx_hal.h"
 #include <stdint.h>
@@ -33,12 +34,12 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
  typedef enum{
-	STATUS_OK = 0,
-	WRONG_TIMEOUT = -1,
-	CLOCK_ERROR = -2,
-	BIT_FLAG_IS_ZERO = -3,
-	BIT_ISNT_ZERO = -4,
-	MSK_REG_VAL_DOESNT_MATCH = -5
+	STATUS_OK = 0x00U,
+	WRONG_TIMEOUT = 0x01U,
+	CLOCK_ERROR = 0x02U,
+	BIT_FLAG_IS_ZERO = 0x03U,
+	BIT_ISNT_ZERO = 0x04U,
+	MSK_REG_VAL_DOESNT_MATCH = 0x05U
 
 }status_t;
 /* USER CODE END Includes */

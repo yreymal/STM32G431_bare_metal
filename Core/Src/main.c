@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -96,7 +95,9 @@ static inline status_t isValueSet(volatile const uint32_t *reg, const uint32_t m
 	 */
 
 	while(((*reg) & mask) != value ){
+#ifdef DEBUG_MODE
 		uint32_t debug = ((*reg) & mask);
+#endif
 		--temp;
 		if(temp<=0){
 			return MSK_REG_VAL_DOESNT_MATCH;
@@ -118,7 +119,9 @@ static inline int isBitZero(volatile const uint32_t *reg, const uint32_t mask, c
 			return WRONG_TIMEOUT;
 				}
 	while( ((*reg) & mask)!=0u ){
+#ifdef DEBUG_MODE
 		uint32_t debug = ((*reg) & mask);
+#endif
 		--temp;
 		if(temp<=0){
 			return BIT_ISNT_ZERO;

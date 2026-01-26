@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "seven_segment.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -266,10 +267,14 @@ int main(void)
     st = initGPIOA5();
 	if(st!=STATUS_OK)
 		return st;
+
+	st=configure_7_seg_pins();
+	if(st!=STATUS_OK)
+			return st;
     st = configureUserButton();
 	if(st!=STATUS_OK)
 		return st;
-  /* USER CODE END Init */
+//  /* USER CODE END Init */
 
 
 
@@ -284,16 +289,25 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	uint8_t i = 0;
   while (1)
   {
     /* USER CODE END WHILE */
 
 
-	  if(GPIOC->IDR<<GPIO_IDR_ID13_Pos){
-		  delay(1000000);
-		  GPIOA->ODR^=GPIO_ODR_OD5_Msk;
-		  delay(1000000);
-	  }
+	  	  /* if user button pressed, increase i counter */
+		  if(GPIOC->IDR & (1<<13)){
+			  ++i;
+			  /* 7 segment array contains 9 numbers, if it goes beyond that range, reset the counter */
+			  if(i>8)
+				  i = 0;
+		  }
+		  GPIOA->ODR = segment_numbers[i];
+
+		  delay(2000000);
+
+
+	//  }
 
     /* USER CODE BEGIN 3 */
   }

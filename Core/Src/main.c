@@ -45,6 +45,9 @@ int main(void)
     st = configureUserButton();
 	if(st!=STATUS_OK)
 		return st;
+	st = configureInterrupt();
+	if(st!=STATUS_OK)
+		return st;
 //  /* USER CODE END Init */
 
 

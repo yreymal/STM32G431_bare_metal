@@ -11,7 +11,7 @@
 #ifndef INC_SEVEN_SEGMENT_H_
 #define INC_SEVEN_SEGMENT_H_
 
-extern uint32_t segment_numbers[9];
+extern uint32_t segment_numbers[10];
 extern uint32_t seg_numbers[];
 
 

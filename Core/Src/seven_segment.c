@@ -25,7 +25,7 @@
 #define DIGIT_SEVEN		(~(GPIO_ODR_OD9_Msk|GPIO_ODR_OD8_Msk|GPIO_ODR_OD7_Msk))
 #define DIGIT_NINE		(~GPIO_ODR_OD8_Msk)
 
-uint32_t segment_numbers[9] = {(GPIO_ODR_OD5_Msk|GPIO_ODR_OD6_Msk),//1
+uint32_t segment_numbers[10] = {(GPIO_ODR_OD5_Msk|GPIO_ODR_OD6_Msk),//1
 						 ~(GPIO_ODR_OD9_Msk|GPIO_ODR_OD6_Msk),//2
 						(~(GPIO_ODR_OD8_Msk|GPIO_ODR_OD9_Msk)),//3
 						(~(GPIO_ODR_OD4_Msk|GPIO_ODR_OD8_Msk|GPIO_ODR_OD7_Msk)),//4
@@ -33,7 +33,8 @@ uint32_t segment_numbers[9] = {(GPIO_ODR_OD5_Msk|GPIO_ODR_OD6_Msk),//1
 						(~GPIO_ODR_OD5_Msk),		//6
 						((GPIO_ODR_OD4_Msk|GPIO_ODR_OD5_Msk|GPIO_ODR_OD6_Msk)),//7
 						(0b1111111<<4UL),		//8
-						~GPIO_ODR_OD8_Msk 			//9
+						~GPIO_ODR_OD8_Msk,		//9
+						~GPIO_ODR_OD10_Msk      //0
 						};
 
 

@@ -73,7 +73,7 @@ int main(void)
 		  if(GPIOC->IDR & (1<<13)){
 			  ++i;
 			  /* 7 segment array contains 9 numbers, if it goes beyond that range, reset the counter */
-			  if(i>8)
+			  if(i>9)
 				  i = 0;
 		  }
 		  GPIOA->ODR =  segment_numbers[i];

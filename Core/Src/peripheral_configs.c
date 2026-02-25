@@ -64,7 +64,7 @@ status_t ConfigureClock(){
 	RCC->CFGR&=~(RCC_CFGR_PPRE1_Msk|RCC_CFGR_PPRE2_Msk|RCC_CFGR_HPRE_Msk);
 
 	/*configurate PLL */
-	/* HSE = 24 MHz, purpose - SYSCLC 64 MHz
+	/* HSE = 24 MHz, purpose - SYSCLC = 64 MHz
 	 * SYSCLC = Vc/PLLR, PLLR =2
 	 * PLLM = 3. =>24/3 = 8 MHz
 	 * PLLN = 16, 16 * 8 = 12GPIO_MODER_MODE5_Pos8MHz

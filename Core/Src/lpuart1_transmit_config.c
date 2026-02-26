@@ -35,30 +35,62 @@ complete.
 
 
 void configure_lpuart_transmit(void){
+	RCC->AHB2ENR|=(1ul<<RCC_AHB2ENR_GPIOAEN_Pos);
+
+			GPIOA->MODER&=~((3UL << GPIO_MODER_MODE2_Pos)|(3UL << GPIO_MODER_MODE3_Pos));
+			/* 10: Alternate function mode (UART) */
+			GPIOA->MODER|= ((2UL << GPIO_MODER_MODE2_Pos)|(2UL << GPIO_MODER_MODE3_Pos));
 
 	/* turning off lpuart before configurate it */
-	/* UE: LPUART enable */
+	/* UE: LPUART disable */
 	/* 0: LPUART prescaler and outputs disabled, low-power mode */
 	LPUART1->CR1&=~ (1UL << USART_CR1_UE_Pos);
 
+/* 1 */
 	/* M1[1:0] = ‘00’: 1 Start bit, 8 Data bits, n Stop bit
 	 * M0 - legacy from old STM F series*/
 	LPUART1->CR1&=~ ((1UL << USART_CR1_M0_Pos)|(1UL << USART_CR1_M1_Pos));
 
 	/* clear 2 LPUART bits for RCC clock selection*/
-	RCC->CCIPR&=~ (3UL<<RCC_CCIPR_LPUART1SEL_Pos);
+	RCC->CCIPR&=~ (3UL << RCC_CCIPR_LPUART1SEL_Pos);
+
 	/* 01: System clock (SYSCLK) selected as LPUART1 clock */
-	RCC->CCIPR|=(1UL<<RCC_CCIPR_LPUART1SEL_Pos);
+	RCC->CCIPR|=(1UL << RCC_CCIPR_LPUART1SEL_Pos);
 
-
+/* 2 */
 	/* so SYSCLK(configurated as 64 MHz is fLPUART_clk */
 	/* BRR= (256×fLPUART_clk​​)/baudrate
 	 * BRR = (256 * 64M)/115200
 	 * BRR = 142 222(rounded) */
 	LPUART1->BRR = 142222;
-
+/* 3 */
 	/* 00: 1 stop bit */
-	LPUART1->CR2&= ~(3UL<<USART_CR2_STOP_Pos);
+	LPUART1->CR2&= ~(3UL << USART_CR2_STOP_Pos);
+/* 4 */
+	/* UE: LPUART enable */
+	LPUART1->CR1|=(1UL << USART_CR1_UE_Pos);
+/* 5 */
+	/* 0: DMA mode is disabled for transmission */
+	LPUART1->CR3&=~(1UL << USART_CR3_DMAT_Pos);
 
+	/* 0: DMA mode is disabled for reception */
+	LPUART1->CR3&=~(1UL << USART_CR3_DMAR_Pos);
+/* 6 */
+	/* Enable the transmitter. When you do,
+	 * the TX line goes to the idle (HIGH) state before any data is sent..*/
+	LPUART1->CR1|=(1UL << USART_CR1_TE_Pos);
+
+}
+
+void sendLPUART1(uint8_t sendByte){
+
+	/* waiting while we can send byte*
+	 * FIFO mode disabled
+	 * USART interrupt and status register [alternate] (USART_ISR)*
+	 */
+
+	/* 1: Data register not full */
+	while(!LPUART1->ISR & (1UL << USART_ISR_TXE_Pos));
+	LPUART1->TDR = sendByte;
 
 }

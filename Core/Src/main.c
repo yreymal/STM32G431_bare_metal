@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "seven_segment.h"
+#include "lpuart1_transmit_config.h"
 
 
 int main(void)
@@ -51,7 +52,7 @@ int main(void)
 //  /* USER CODE END Init */
 
 
-
+	configure_lpuart_transmit();
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
@@ -67,12 +68,13 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
-
+	  uint8_t message = 'H';
+	  sendLPUART1((uint8_t)message);
+	  delay(2000000);
 	  	  /* if user button pressed, increase i counter */
 		  if(GPIOC->IDR & (1<<13)){
 			  ++i;
-			  /* 7 segment array contains 9 numbers, if it goes beyond that range, reset the counter */
+			  /* 7 segment array contains 10 numbers(with 0), if it goes beyond that range, reset the counter */
 			  if(i>9)
 				  i = 0;
 		  }

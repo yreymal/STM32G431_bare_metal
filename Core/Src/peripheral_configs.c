@@ -97,7 +97,7 @@ return st;
 
 int initGPIOA5(){
 	/* start clock for port A */
-	RCC->AHB2ENR|=(1u<<RCC_AHB2ENR_GPIOAEN_Pos);
+	RCC->AHB2ENR|=(1ul<<RCC_AHB2ENR_GPIOAEN_Pos);
 	/* clean bits before setting  */
 	GPIOA->MODER&=~GPIO_MODER_MODE5_Msk;
 	/* |01| - General purpose output mode */

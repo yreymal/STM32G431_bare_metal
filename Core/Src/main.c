@@ -68,9 +68,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  uint8_t message = 'H';
-	  sendLPUART1((uint8_t)message);
-	  delay(2000000);
+
 	  sendLPUART1((uint8_t)'\n');
 	  	  /* if user button pressed, increase i counter */
 		  if(GPIOC->IDR & (1<<13)){
@@ -80,7 +78,7 @@ int main(void)
 				  i = 0;
 		  }
 		  GPIOA->ODR =  segment_numbers[i];
-
+		  sendLPUART1('0'+i);
 		  delay(2000000);
 
 

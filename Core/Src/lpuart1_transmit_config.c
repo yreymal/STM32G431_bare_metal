@@ -44,7 +44,7 @@ void configure_lpuart_transmit(void){
 
 
 	GPIOA->MODER&=~((3UL << GPIO_MODER_MODE2_Pos)|(3UL << GPIO_MODER_MODE3_Pos));
-	/* 10: Alternate function mode (UART) */
+	/*  Alternate function mode (UART) */
 	GPIOA->MODER|= ((2UL << GPIO_MODER_MODE2_Pos)|(2UL << GPIO_MODER_MODE3_Pos));
 
 	/* clean AFR 2,3 bits */

@@ -39,7 +39,7 @@ void configure_lpuart_transmit(void){
 
 			GPIOA->MODER&=~((3UL << GPIO_MODER_MODE2_Pos)|(3UL << GPIO_MODER_MODE3_Pos));
 			/* 10: Alternate function mode (UART) */
-			GPIOA->MODER|= ((2UL << GPIO_MODER_MODE2_Pos)|(2UL << GPIO_MODER_MODE3_Pos));
+			GPIOA->MODER|= ((2UL << GPIO_MODER_MODE2_Pos)|(3UL << GPIO_MODER_MODE3_Pos));
 
 	/* turning off lpuart before configurate it */
 	/* UE: LPUART disable */
@@ -90,7 +90,7 @@ void sendLPUART1(uint8_t sendByte){
 	 */
 
 	/* 1: Data register not full */
-	while(!LPUART1->ISR & (1UL << USART_ISR_TXE_Pos));
+	while(!(LPUART1->ISR & (1UL << USART_ISR_TXE_Pos)));
 	LPUART1->TDR = sendByte;
 
 }

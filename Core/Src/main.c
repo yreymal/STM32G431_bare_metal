@@ -71,6 +71,7 @@ int main(void)
 	  uint8_t message = 'H';
 	  sendLPUART1((uint8_t)message);
 	  delay(2000000);
+	  sendLPUART1((uint8_t)'\n');
 	  	  /* if user button pressed, increase i counter */
 		  if(GPIOC->IDR & (1<<13)){
 			  ++i;

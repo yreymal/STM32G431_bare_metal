@@ -35,11 +35,25 @@ complete.
 
 
 void configure_lpuart_transmit(void){
-	RCC->AHB2ENR|=(1ul<<RCC_AHB2ENR_GPIOAEN_Pos);
 
-			GPIOA->MODER&=~((3UL << GPIO_MODER_MODE2_Pos)|(3UL << GPIO_MODER_MODE3_Pos));
-			/* 10: Alternate function mode (UART) */
-			GPIOA->MODER|= ((2UL << GPIO_MODER_MODE2_Pos)|(3UL << GPIO_MODER_MODE3_Pos));
+	/* enabling clock for GPIOA */
+	RCC->AHB2ENR|=(1UL << RCC_AHB2ENR_GPIOAEN_Pos);
+
+	/* enabling clock for LPUART1 */
+	RCC->APB1ENR2|=(1UL << RCC_APB1ENR2_LPUART1EN_Pos);
+
+
+	GPIOA->MODER&=~((3UL << GPIO_MODER_MODE2_Pos)|(3UL << GPIO_MODER_MODE3_Pos));
+	/* 10: Alternate function mode (UART) */
+	GPIOA->MODER|= ((2UL << GPIO_MODER_MODE2_Pos)|(2UL << GPIO_MODER_MODE3_Pos));
+
+	/* clean AFR 2,3 bits */
+	/* AFR[0] - AFRL - pins 0–7
+	   AFR[1] - AFRH - pins 8–15*/
+	GPIOA->AFR[0]&=~ ((0xFUL << GPIO_AFRL_AFSEL2_Pos)|(0xFUL << GPIO_AFRL_AFSEL3_Pos));
+	/* LPUART1 for pins 2,3 - AF12  */
+	GPIOA->AFR[0]|= ((12 << GPIO_AFRL_AFSEL2_Pos)|(12 << GPIO_AFRL_AFSEL3_Pos));
+
 
 	/* turning off lpuart before configurate it */
 	/* UE: LPUART disable */
@@ -79,7 +93,6 @@ void configure_lpuart_transmit(void){
 	/* Enable the transmitter. When you do,
 	 * the TX line goes to the idle (HIGH) state before any data is sent..*/
 	LPUART1->CR1|=(1UL << USART_CR1_TE_Pos);
-
 }
 
 void sendLPUART1(uint8_t sendByte){

@@ -12,5 +12,6 @@
 
 void configure_lpuart_transmit(void);
 void sendLPUART1(uint8_t b);
+uint8_t receiveLPUART1();
 
 #endif /* INC_LPUART1_TRANSMIT_CONFIG_H_ */

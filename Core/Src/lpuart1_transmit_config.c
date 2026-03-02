@@ -93,6 +93,9 @@ void configure_lpuart_transmit(void){
 	/* Enable the transmitter. When you do,
 	 * the TX line goes to the idle (HIGH) state before any data is sent..*/
 	LPUART1->CR1|=(1UL << USART_CR1_TE_Pos);
+
+	/* enable LPUART for receiving*/
+	LPUART1->CR1|=(1UL << USART_CR1_RE_Pos);
 }
 
 void sendLPUART1(uint8_t sendByte){
@@ -105,5 +108,11 @@ void sendLPUART1(uint8_t sendByte){
 	/* 1: Data register not full */
 	while(!(LPUART1->ISR & (1UL << USART_ISR_TXE_Pos)));
 	LPUART1->TDR = sendByte;
+
+}
+
+uint8_t receiveLPUART1(){
+	   while (!(LPUART1->ISR & USART_ISR_RXNE_RXFNE)) {}
+	    return (uint8_t)LPUART1->RDR;
 
 }

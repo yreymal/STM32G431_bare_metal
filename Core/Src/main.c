@@ -68,7 +68,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+#ifdef receive
 	  sendLPUART1((uint8_t)'\n');
 	  	  /* if user button pressed, increase i counter */
 		  if(GPIOC->IDR & (1<<13)){
@@ -78,7 +78,10 @@ int main(void)
 				  i = 0;
 		  }
 		  GPIOA->ODR =  segment_numbers[i];
+		  /* '0' = 48 in ASCII */
 		  sendLPUART1('0'+i);
+#endif
+		  GPIOA->ODR =  segment_numbers[(uint8_t)(receiveLPUART1() - '0')];
 		  delay(2000000);
 
 

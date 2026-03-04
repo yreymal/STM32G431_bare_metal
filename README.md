@@ -14,18 +14,35 @@ Both methods produce the firmware executable (`.elf`)
 ## Requirements
 
 Ensure the following tools are installed:
-
+* Make (if using the Makefile workflow)
+For CMake:
 * ARM GCC Toolchain (`arm-none-eabi-gcc`)
 * CMake
 * Ninja build system
-* Make (if using the Makefile workflow)
+
 
 Check installations:
 
+make --version
 arm-none-eabi-gcc --version
 cmake --version
 ninja --version
-make --version
+
+---
+
+## Build Using Makefile
+
+A Makefile is also provided for building the project without CMake.
+
+Build the firmware:
+
+**make all**
+
+Clean generated files:
+
+**make clean**
+
+The Makefile build produces the same firmware outputs (`.elf`, `.bin`, `.hex`) depending on the Makefile configuration.
 
 ---
 
@@ -49,28 +66,13 @@ build/bin/stm32g431rb.elf
 
 To completely remove previous build artifacts:
 
-**rm -rf build bin**
+**rm -rf build**
 
 Then reconfigure and build again:
 
 **cmake --preset stm32G431**
 **cmake --build build**
 
----
-
-## Build Using Makefile
-
-A Makefile is also provided for building the project without CMake.
-
-Build the firmware:
-
-**make all**
-
-Clean generated files:
-
-**make clean**
-
-The Makefile build produces the same firmware outputs (`.elf`, `.bin`, `.hex`) depending on the Makefile configuration.
 
 ---
 

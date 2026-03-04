@@ -15,7 +15,7 @@ Both methods produce the firmware executable (`.elf`)
 
 Ensure the following tools are installed:
 * Make (if using the Makefile workflow)
-For CMake:
+* For CMake:
 * ARM GCC Toolchain (`arm-none-eabi-gcc`)
 * CMake
 * Ninja build system

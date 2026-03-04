@@ -2,14 +2,26 @@ set(CMAKE_SYSTEM_NAME Generic)   		# tell CMake target system is not the host OS
 set(CMAKE_SYSTEM_PROCESSOR cortex-m4)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin)
 
-set(TOOLCHAIN_PATH C:/build_tool/T_gcc_arm~V7-2017-q4/T_gcc_arm/bin/arm-none-eabi-)
 # Bare-metal toolchain: don't try to link a runnable exe during compiler checks
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
-set(CMAKE_C_COMPILER   ${TOOLCHAIN_PATH}gcc.exe)
-set(CMAKE_ASM_COMPILER ${TOOLCHAIN_PATH}gcc.exe)
-set(CMAKE_OBJCOPY      ${TOOLCHAIN_PATH}objcopy.exe)
-set(CMAKE_SIZE         ${TOOLCHAIN_PATH}size.exe)
+# Detect HOST OS (where CMake runs)
+if(WIN32) #CYGWIN
+	set(ARM_GCC_BIN  "C:/build_tool/T_gcc_arm~V7-2017-q4/T_gcc_arm/bin")
+	set(CMAKE_SUFFIX ".exe")
+elseif(APPLE)
+	set(ARM_GCC_BIN "/Applications/ArmGNUToolchain/12.3.rel1/arm-none-eabi/bin")
+	set(CMAKE_SUFFIX "")
+else()
+	message(FATAL_ERROR "Unsupported host OS")
+endif()	
+	
+set(PREFIX "arm-none-eabi-")
+
+set(CMAKE_C_COMPILER   "${ARM_GCC_BIN}/${PREFIX}gcc${CMAKE_SUFFIX}")
+set(CMAKE_ASM_COMPILER "${ARM_GCC_BIN}/${PREFIX}gcc${CMAKE_SUFFIX}")
+set(CMAKE_OBJCOPY      "${ARM_GCC_BIN}/${PREFIX}objcopy${CMAKE_SUFFIX}")
+set(CMAKE_SIZE         "${ARM_GCC_BIN}/${PREFIX}size${CMAKE_SUFFIX}")
 
 # FLAGS description 
 # -mcpu=cortex-m4        ARM Cortex-M4 core

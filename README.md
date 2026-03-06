@@ -4,7 +4,7 @@ Build Instructions
 
 ## Overview
 
-This project can be built on **Cygwin** or  **MacOs** using either:
+This project can be built for **bare-metal** on **Cygwin** or **MacOs** using either:
 
 1. **CMake + Ninja** - generates only .elf file 
 2. **Makefile (alternative method)** - generates .elf, .bin, .hex images for flashing the STM32 microcontroller

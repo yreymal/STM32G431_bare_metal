@@ -16,28 +16,12 @@ add_executable(${PROJECT_NAME}
 	${CMAKE_SOURCE_DIR}/Core/Src/syscalls.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/sysmem.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/system_stm32g4xx.c
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_cortex.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_dma.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_dma_ex.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_exti.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash_ex.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_flash_ramfunc.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_gpio.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_pwr.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_pwr_ex.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_rcc.c 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_rcc_ex.c
-	
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE STM32G431xx)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/Core/Inc
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Inc 
-	${CMAKE_SOURCE_DIR}/Drivers/STM32G4xx_HAL_Driver/Inc/Legacy 
 	${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32G4xx/Include
 	${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Include
 )

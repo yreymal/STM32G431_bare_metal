@@ -175,21 +175,44 @@ constexpr uint32_t kSwitchTimeout = 0x1000U;
     /* enable clock for GPIOA */
     RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN_Msk;
 
-    /* clean MODE multi-bits before setting  */
-	GPIOA->MODER&=~GPIO_MODER_MODE5_Msk;
-	/* |01| - General purpose output mode */
-	GPIOA->MODER|=(1UL<<GPIO_MODER_MODE5_Pos);
+    /* configure PA5 as general purpose output mode: 01 */
+    GPIOA->MODER &= ~GPIO_MODER_MODE5_Msk;
+    GPIOA->MODER |=  (1UL << GPIO_MODER_MODE5_Pos);
 
-    /* |0| - Output push-pull */
+    Status st = isValueSet(&GPIOA->MODER, GPIO_MODER_MODE5_Msk, kReadyTimeout, (1UL << GPIO_MODER_MODE5_Pos));
+    if (st != Status::kOK)
+    {
+        return st;
+    }
+
+    /* output type: push-pull = 0 */
     GPIOA->OTYPER &= ~GPIO_OTYPER_OT5_Msk;
+
+    st = isBitZero(&GPIOA->OTYPER, GPIO_OTYPER_OT5_Msk, kReadyTimeout);
+    if (st != Status::kOK)
+    {
+        return st;
+    }
 
     /* no pull-up, no pull-down */
     GPIOA->PUPDR &= ~GPIO_PUPDR_PUPD5_Msk;
 
-    /* |0| - Low speed */
+    st = isValueSet(&GPIOA->PUPDR, GPIO_PUPDR_PUPD5_Msk, kReadyTimeout, 0x0U);
+    if (st != Status::kOK)
+    {
+        return st;
+    }
+
+    /* low speed */
     GPIOA->OSPEEDR &= ~GPIO_OSPEEDR_OSPEED5_Msk;
 
-    return Status::kOk;
+    st = isValueSet(&GPIOA->OSPEEDR, GPIO_OSPEEDR_OSPEED5_Msk, kReadyTimeout, 0x0U);
+    if (st != Status::kOK)
+    {
+        return st;
+    }
+
+    return Status::kOK;
 }
 
 //TODO: delay function

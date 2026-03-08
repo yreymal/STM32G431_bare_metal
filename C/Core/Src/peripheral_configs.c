@@ -5,6 +5,7 @@
  *      Author: romanyarmak
  */
 #include "peripheral_configs.h"
+#include "reg_bits_check.h"
 
 
 
@@ -34,7 +35,7 @@ status_t ConfigureClock(){
 	/* for safety enable and switch temporarily to HSI */
 	RCC->CR|=(1UL<<RCC_CR_HSION_Pos);
 	/* wait until the HSI rdy bit is set, or return with error status */
-	st = isBitSet(&RCC->CR, RCC_CR_HSIRDY_Msk, 0x5000);
+	st = isBitSet(&RCC->CR, RCC_CR_HSIRDY_Msk, READY_TIMEOUT);
 	if(st!=STATUS_OK)
 		return st;
 
@@ -43,7 +44,7 @@ status_t ConfigureClock(){
 	*/
 	RCC->CFGR = (RCC->CFGR & (~RCC_CFGR_SW_Msk)) | (RCC_CFGR_SW_HSI);
 	/* wait until the HSI clock set, or return with error status*/
-	st = isValueSet(&RCC->CFGR, RCC_CFGR_SWS_Msk, 0x1000, RCC_CFGR_SWS_HSI);
+	st = isValueSet(&RCC->CFGR, RCC_CFGR_SWS_Msk, READY_TIMEOUT, RCC_CFGR_SWS_HSI);
 	if(st!=STATUS_OK){
 		return st;
 	}
@@ -55,7 +56,7 @@ status_t ConfigureClock(){
 	/* turning ON HSE */
 	RCC->CR|=(1UL<<RCC_CR_HSEON_Pos);
 	/* wait until the HSE rdy bit is set, or return with error status */
-	st = isBitSet(&RCC->CR, RCC_CR_HSERDY_Msk, 0x5000);
+	st = isBitSet(&RCC->CR, RCC_CR_HSERDY_Msk, READY_TIMEOUT);
 	if(st!=STATUS_OK)
 		return st;
 	//----------------------------------------------------------------------------
@@ -65,7 +66,7 @@ status_t ConfigureClock(){
 	RCC->CR&=(~RCC_CR_PLLON_Msk);
 
 	/* wait until the PLL rdy bit is set to 0, or return with error status */
-	st = isBitZero(&RCC->CR,RCC_CR_PLLRDY_Msk,0x5000);
+	st = isBitZero(&RCC->CR,RCC_CR_PLLRDY_Msk, READY_TIMEOUT);
 	if(st!=STATUS_OK){
 		return st;
 	}
@@ -109,7 +110,7 @@ status_t ConfigureClock(){
     //----------------------------------------------------------------------------
     /*turning ON PLL and wait for PLLRDY flag set as 1, or return with error status*/
 	RCC->CR|=(1UL<<RCC_CR_PLLON_Pos);
-	st = isBitSet(&RCC->CR,RCC_CR_PLLRDY_Msk,0x5000);
+	st = isBitSet(&RCC->CR,RCC_CR_PLLRDY_Msk, READY_TIMEOUT);
 	if(st!=STATUS_OK)
 		return st;
 	//----------------------------------------------------------------------------
@@ -122,7 +123,7 @@ status_t ConfigureClock(){
 	RCC->CFGR|=(RCC_CFGR_SW_PLL<<RCC_CFGR_SW_Pos);
 
 	/* wait until the SWS set as PLL, or return with error status */
-	st = isValueSet(&RCC->CFGR,RCC_CFGR_SWS_Msk, 0x5000, RCC_CFGR_SWS_PLL);
+	st = isValueSet(&RCC->CFGR,RCC_CFGR_SWS_Msk, READY_TIMEOUT, RCC_CFGR_SWS_PLL);
 	if(st!=STATUS_OK)
 		return st;
 	//----------------------------------------------------------------------------
@@ -133,31 +134,58 @@ status_t ConfigureClock(){
     RCC->CR &= ~RCC_CR_HSION_Msk;
 
 	/* wait until HSI status set as turned off, or return with error status */
-	st = isBitZero(&RCC->CR,RCC_CR_HSIRDY_Msk,0x5000);
+	st = isBitZero(&RCC->CR, RCC_CR_HSIRDY_Msk, READY_TIMEOUT);
 	if(st!=STATUS_OK)
 		return st;
 return st;
 }
 
-status_t initGPIOA5(){
-	/* enable clock for port A */
-	RCC->AHB2ENR|=(1UL<<RCC_AHB2ENR_GPIOAEN_Pos);
+status_t initGPIOA5(void)
+{
+    status_t st = STATUS_OK;
 
-	/* clean MODE multi-bits before setting  */
-	GPIOA->MODER&=~GPIO_MODER_MODE5_Msk;
+    /* enable clock for GPIOA */
+    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN_Msk;
 
-	/* |01| - General purpose output mode */
-	GPIOA->MODER|=(1UL<<GPIO_MODER_MODE5_Pos);
+    st = isBitSet(&RCC->AHB2ENR, RCC_AHB2ENR_GPIOAEN_Msk, READY_TIMEOUT);
+    if (st != STATUS_OK) {
+        return st;
+    }
 
-	/* |0| - Output push-pull */
-	GPIOA->OTYPER&=(~GPIO_OTYPER_OT5_Pos);
+    /* PA5 -> general purpose output mode: 01 */
+    GPIOA->MODER &= ~GPIO_MODER_MODE5_Msk;
+    GPIOA->MODER |=  (1UL << GPIO_MODER_MODE5_Pos);
 
-	/* No pull-up, no pull-down */
-	GPIOA->PUPDR&=~GPIO_PUPDR_PUPD5_Msk;
+    st = isValueSet(&GPIOA->MODER, GPIO_MODER_MODE5_Msk, READY_TIMEOUT, (1UL << GPIO_MODER_MODE5_Pos));
+    if (st != STATUS_OK) {
+        return st;
+    }
 
-	/* |0| - Low speed */
-	GPIOA->OSPEEDR&=~GPIO_OSPEEDR_OSPEED5_Msk;
-	return STATUS_OK;
+    /* PA5 -> push-pull: 0 */
+    GPIOA->OTYPER &= ~GPIO_OTYPER_OT5_Msk;
+
+    st = isBitZero(&GPIOA->OTYPER, GPIO_OTYPER_OT5_Msk, READY_TIMEOUT);
+    if (st != STATUS_OK) {
+        return st;
+    }
+
+    /* PA5 -> no pull-up / no pull-down: 00 */
+    GPIOA->PUPDR &= ~GPIO_PUPDR_PUPD5_Msk;
+
+    st = isValueSet(&GPIOA->PUPDR, GPIO_PUPDR_PUPD5_Msk, READY_TIMEOUT, 0U);
+    if (st != STATUS_OK) {
+        return st;
+    }
+
+    /* PA5 -> low speed: 00 */
+    GPIOA->OSPEEDR &= ~GPIO_OSPEEDR_OSPEED5_Msk;
+
+    st = isValueSet(&GPIOA->OSPEEDR, GPIO_OSPEEDR_OSPEED5_Msk, READY_TIMEOUT, 0U);
+    if (st != STATUS_OK) {
+        return st;
+    }
+
+    return STATUS_OK;
 }
 
 int delay(const uint32_t timer){

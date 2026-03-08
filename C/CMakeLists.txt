@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 
 project(stm32g431rb LANGUAGES C ASM)
 
-set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/STM32G431RBTX_FLASH.ld)
+set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/linker/STM32G431RBTX_FLASH.ld)
 
 add_executable(${PROJECT_NAME}
 	${CMAKE_SOURCE_DIR}/Core/Startup/startup_stm32g431rbtx.s

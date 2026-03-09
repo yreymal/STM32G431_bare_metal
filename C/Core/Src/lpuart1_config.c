@@ -5,11 +5,13 @@
  *      Author: romanyarmak
  */
 
-#include "lpuart1_transmit_config.h"
+#include "lpuart1_config.h"
 
 
 
 /*
+ * From Reference Manual: 
+ *
  * Character transmission procedure
 To transmit a character, follow the sequence below:
 1. Program the M bits in LPUART_CR1 to define the word length.
@@ -33,27 +35,28 @@ indicates that the transmission of the last frame is complete.
 complete.
  */
 
+void configure_lpuart_pins(void){
 
-void configure_lpuart_transmit(void){
+	/* enabling clock for port A(GPIOA), if it wasn't enable already */
+	if(!(RCC->AHB2ENR & (1UL << RCC_AHB2ENR_GPIOAEN_Pos))){
+		RCC->AHB2ENR|= (1UL << RCC_AHB2ENR_GPIOAEN_Pos);
+	}
 
-	/* enabling clock for GPIOA */
-	RCC->AHB2ENR|=(1UL << RCC_AHB2ENR_GPIOAEN_Pos);
-
-	/* enabling clock for LPUART1 */
+	/* enabling clock for LPUART1 periphery */
 	RCC->APB1ENR2|=(1UL << RCC_APB1ENR2_LPUART1EN_Pos);
 
+	/* configurating PA2, PA3 as alternate function pins */
+	GPIOA->MODER&= ~((0x3UL << GPIO_MODER_MODE2_Pos)|(0x3UL << GPIO_MODER_MODE3_Pos));
 
-	GPIOA->MODER&=~((3UL << GPIO_MODER_MODE2_Pos)|(3UL << GPIO_MODER_MODE3_Pos));
-	/*  Alternate function mode (UART) */
-	GPIOA->MODER|= ((2UL << GPIO_MODER_MODE2_Pos)|(2UL << GPIO_MODER_MODE3_Pos));
-
-	/* clean AFR 2,3 bits */
-	/* AFR[0] - AFRL - pins 0–7
-	   AFR[1] - AFRH - pins 8–15*/
-	GPIOA->AFR[0]&=~ ((0xFUL << GPIO_AFRL_AFSEL2_Pos)|(0xFUL << GPIO_AFRL_AFSEL3_Pos));
-	/* LPUART1 for pins 2,3 - AF12  */
+	/* 0b10: Alternate function mode */
+	GPIOA->MODER|=((0x2UL << GPIO_MODER_MODE2_Pos)|(0x2UL << GPIO_MODER_MODE3_Pos));
+    /* LPUART1 for PA2,PA3 - AF12 1100 */
+	GPIOA->AFR[0]&= ~((0xFUL << GPIO_AFRL_AFSEL2_Pos)|(0xFUL << GPIO_AFRL_AFSEL3_Pos));
 	GPIOA->AFR[0]|= ((12 << GPIO_AFRL_AFSEL2_Pos)|(12 << GPIO_AFRL_AFSEL3_Pos));
 
+}
+
+void lpuart1_init(void){
 
 	/* turning off lpuart before configurate it */
 	/* UE: LPUART disable */
@@ -76,7 +79,7 @@ void configure_lpuart_transmit(void){
 	/* BRR= (256×fLPUART_clk​​)/baudrate
 	 * BRR = (256 * 64M)/115200
 	 * BRR = 142 222(rounded) */
-	LPUART1->BRR = 142222;
+	LPUART1->BRR = (256U * SYSCLK_FREQ) / LPUART_BAUD;
 /* 3 */
 	/* 00: 1 stop bit */
 	LPUART1->CR2&= ~(3UL << USART_CR2_STOP_Pos);
@@ -93,9 +96,12 @@ void configure_lpuart_transmit(void){
 	/* Enable the transmitter. When you do,
 	 * the TX line goes to the idle (HIGH) state before any data is sent..*/
 	LPUART1->CR1|=(1UL << USART_CR1_TE_Pos);
+
+	/* enable LPUART for receiving*/
+	LPUART1->CR1|=(1UL << USART_CR1_RE_Pos);
 }
 
-void sendLPUART1(uint8_t sendByte){
+void lpuart1_send_byte(uint8_t sendByte){
 
 	/* waiting while we can send byte*
 	 * FIFO mode disabled
@@ -105,5 +111,11 @@ void sendLPUART1(uint8_t sendByte){
 	/* 1: Data register not full */
 	while(!(LPUART1->ISR & (1UL << USART_ISR_TXE_Pos)));
 	LPUART1->TDR = sendByte;
+
+}
+
+uint8_t lpuart1_receive_byte(){
+	   while (!(LPUART1->ISR & USART_ISR_RXNE_RXFNE)) {}
+	    return (uint8_t)LPUART1->RDR;
 
 }

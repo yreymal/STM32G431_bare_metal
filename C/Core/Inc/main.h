@@ -32,6 +32,10 @@ extern "C" {
 #include <stdint.h>
 #include <stm32g431xx.h>
 #include "peripheral_configs.h"
+#include "status.h"
+#include "seven_segment.h"
+#include "lpuart1_config.h"
+#include "interrupt_config.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -53,7 +57,7 @@ extern "C" {
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
-void Error_Handler(void);
+void Error_Handler(status_t st);
 
 /* USER CODE BEGIN EFP */
 

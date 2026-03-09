@@ -7,52 +7,11 @@
 
 #include "seven_segment.h"
 
-/* 	GPIO_ODR_OD4_Pos)	pin 4 - A				A
-	GPIO_ODR_OD5_Pos	pin 5  -B			  F   B
-	GPIO_ODR_OD6_Pos	pin 6  -C				G
-	GPIO_ODR_OD7_Pos	pin 7  -D			  E	  C
-	GPIO_ODR_OD8_Pos	pin 8  -E				D
-	GPIO_ODR_OD9_Pos	pin 9  -F
-	GPIO_ODR_OD10_Pos   pin 10 -G
- * */
-#define ALL_8_DIGITS    (0b1111111<<4UL)
-#define DIGIT_ONE 		(GPIO_ODR_OD5_Msk|GPIO_ODR_OD6_Msk)
-#define DIGIT_TWO 		(~(GPIO_ODR_OD9_Msk|GPIO_ODR_OD6_Msk))
-#define DIGIT_THREE		(~(GPIO_ODR_OD8_Msk|GPIO_ODR_OD9_Msk))
-#define DIGIT_FOUR		(~(GPIO_ODR_OD4_Msk|GPIO_ODR_OD8_Msk|GPIO_ODR_OD7_Msk))
-#define DIGIT_FIVE		(~(GPIO_ODR_OD5_Msk|GPIO_ODR_OD8_Msk))
-#define DIGIT_SIX		(~GPIO_ODR_OD5_Msk)
-#define DIGIT_SEVEN		(~(GPIO_ODR_OD9_Msk|GPIO_ODR_OD8_Msk|GPIO_ODR_OD7_Msk))
-#define DIGIT_NINE		(~GPIO_ODR_OD8_Msk)
-
-uint32_t segment_numbers[10] = {
-		                ~GPIO_ODR_OD10_Msk,      //0
-						(GPIO_ODR_OD5_Msk|GPIO_ODR_OD6_Msk),//1
-						 ~(GPIO_ODR_OD9_Msk|GPIO_ODR_OD6_Msk),//2
-						(~(GPIO_ODR_OD8_Msk|GPIO_ODR_OD9_Msk)),//3
-						(~(GPIO_ODR_OD4_Msk|GPIO_ODR_OD8_Msk|GPIO_ODR_OD7_Msk)),//4
-						(~(GPIO_ODR_OD5_Msk|GPIO_ODR_OD8_Msk)),//5
-						(~GPIO_ODR_OD5_Msk),		//6
-						((GPIO_ODR_OD4_Msk|GPIO_ODR_OD5_Msk|GPIO_ODR_OD6_Msk)),//7
-						(0b1111111<<4UL),		//8
-						~GPIO_ODR_OD8_Msk		//9
-						};
-
-
-uint32_t seg_numbers[] = {(1UL<<GPIO_ODR_OD4_Pos),//pin 4 - A
-						 1UL<<GPIO_ODR_OD5_Pos,//pin 5  -B
-						 1UL<<GPIO_ODR_OD6_Pos,//pin 6  -C
-						 1UL<<GPIO_ODR_OD7_Pos,//pin 7  -D
-						 1UL<<GPIO_ODR_OD8_Pos,//pin 8  -E
-						 1UL<<GPIO_ODR_OD9_Pos,//pin 9  -F
-						 1UL<<GPIO_ODR_OD10_Pos//pin 10 -G
-						};
-
 /*PA4-PA10
  * OUTPUT - configuration must be push-pull */
 status_t configure_7_seg_pins(void){
 
-	/* check weather port A clock already enabled, if not, turn it on */
+	/* check whether GPIOA clock is already enabled, if not, turn it on */
 	if(!(RCC->AHB2ENR & (1UL<<RCC_AHB2ENR_GPIOAEN_Pos))){
 		RCC->AHB2ENR|=(1UL<<RCC_AHB2ENR_GPIOAEN_Pos);
 	}

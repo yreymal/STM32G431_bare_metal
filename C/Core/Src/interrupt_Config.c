@@ -5,14 +5,14 @@
  *      Author: romanyarmak
  */
 
-#include "interruptConfig.h"
+#include "interrupt_config.h"
 #include "seven_segment.h"
 
-status_t configureInterrupt(uint32_t gpioPort, uint8_t pinNumber){
+status_t exti_configure_pa0_pa1(){
 
 	/* if GPIOA wasn't enable before, enable */
 
-	if(!(RCC->AHB2ENR & 0x1UL<<RCC_AHB2ENR_GPIOAEN_Pos)){
+	if(!(RCC->AHB2ENR & (0x1UL<<RCC_AHB2ENR_GPIOAEN_Pos))){
 		RCC->AHB2ENR|= (0x1UL<<RCC_AHB2ENR_GPIOAEN_Pos);
 	}
 
@@ -71,11 +71,12 @@ status_t configureInterrupt(uint32_t gpioPort, uint8_t pinNumber){
 
 void EXTI0_IRQHandler(){
  if(EXTI->PR1 & (1<<EXTI_PR1_PIF0_Pos)){
-	 GPIOA->ODR =  segment_numbers[8];
-     /* clear event flag by writing 1 (W1C) */
 
+	 GPIOA->ODR =  ((GPIOA->ODR & (~SEG_7_ALL_MSK)) | segment_numbers[8]);
+
+     /* That is very bad practice in embedded to use delays in an interrupt*/
+     /* that usage serves only for prototyping! */
 	 for(uint32_t j = 0;j<5000000;++j);
-
 
 	 EXTI->PR1 = (1UL << EXTI_PR1_PIF0_Pos);
  }
@@ -84,9 +85,11 @@ void EXTI0_IRQHandler(){
 }
 
 void EXTI1_IRQHandler(){
-	 if(EXTI->PR1 & (1<<EXTI_PR1_PIF1_Pos)){
+	if(EXTI->PR1 & (1<<EXTI_PR1_PIF1_Pos)){
 		 GPIOA->ODR =  segment_numbers[8];
-	   /* clear event flag by writing 1 (W1C) */
+	  
+         /* That is very bad practice in embedded to use delays in an interrupt*/
+         /* that usage serves only for prototyping! */
 		 for(uint32_t j = 0;j<5000000;++j);
 
 	   EXTI->PR1 = (1UL << EXTI_PR1_PIF1_Pos);

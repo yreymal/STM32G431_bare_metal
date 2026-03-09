@@ -44,9 +44,9 @@ C_INCLUDES := \
 # -----------------------------
 # Core
 C_SOURCES := \
-Core/Src/interruptConfig.c \
+Core/Src/interrupt_config.c \
 Core/Src/main.c \
-Core/Src/lpuart1_transmit_config.c \
+Core/Src/lpuart1_config.c \
 Core/Src/peripheral_configs.c \
 Core/Src/seven_segment.c \
 Core/Src/stm32g4xx_it.c \

@@ -18,58 +18,38 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "seven_segment.h"
-#include "lpuart1_transmit_config.h"
-
 
 int main(void)
 {
    status_t st = STATUS_OK;
-  /* USER CODE BEGIN 1 */
+
 	st = ConfigureClock();
 	if(st!=STATUS_OK)
-		return st;
-  /* USER CODE END 1 */
+		Error_Handler(st);
 
-  /* MCU Configuration--------------------------------------------------------*/
-
-
-
-  /* USER CODE BEGIN Init */
     st = initGPIOA5();
 	if(st!=STATUS_OK)
-		return st;
+		Error_Handler(st);
 
 	st=configure_7_seg_pins();
 	if(st!=STATUS_OK)
-			return st;
+			Error_Handler(st);
+
     st = configureUserButton();
 	if(st!=STATUS_OK)
-		return st;
-	st = configureInterrupt();
+		Error_Handler(st);
+
+	st = exti_configure_pa0_pa1();
 	if(st!=STATUS_OK)
-		return st;
-//  /* USER CODE END Init */
+		Error_Handler(st);
 
+  configure_lpuart_pins();
+  lpuart1_init();
 
-	configure_lpuart_transmit();
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-
-  /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
 	uint8_t i = 0;
   while (1)
   {
-    /* USER CODE END WHILE */
-
-	  sendLPUART1((uint8_t)'\n');
+	  lpuart1_send_byte((uint8_t)'\n');
 	  	  /* if user button pressed, increase i counter */
 		  if(GPIOC->IDR & (1<<13)){
 			  ++i;
@@ -78,15 +58,9 @@ int main(void)
 				  i = 0;
 		  }
 		  GPIOA->ODR =  segment_numbers[i];
-		  sendLPUART1('0'+i);
+		  lpuart1_send_byte('0'+i);
 		  delay(2000000);
-
-
-	//  }
-
-    /* USER CODE BEGIN 3 */
   }
-  /* USER CODE END 3 */
 }
 
 /**
@@ -105,13 +79,14 @@ int main(void)
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
-void Error_Handler(void)
+void Error_Handler(status_t st)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
   {
+
   }
   /* USER CODE END Error_Handler_Debug */
 }

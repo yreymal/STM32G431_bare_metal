@@ -1,5 +1,5 @@
 /*
- * interruptConfig.h
+ * interrupt_config.h
  *
  *  Created on: Feb 1, 2026
  *      Author: romanyarmak
@@ -10,7 +10,7 @@
 #ifndef INC_INTERRUPTCONFIG_H_
 #define INC_INTERRUPTCONFIG_H_
 
-status_t configureInterrupt(uint32_t gpioPort, uint8_t pinNumber);
+status_t exti_configure_pa0_pa1();
 
 
 #endif /* INC_INTERRUPTCONFIG_H_ */

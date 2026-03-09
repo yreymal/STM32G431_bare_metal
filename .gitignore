@@ -1,9 +1,12 @@
 # =====================
 # Build output
 # =====================
-Debug/
-Release/
-build/
+C/Debug/
+C/Release/
+C/build/
+Cpp/Debug/
+Cpp/Release/
+Cpp/build/
 
 # =====================
 # STM32CubeIDE / Eclipse

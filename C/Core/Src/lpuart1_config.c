@@ -79,7 +79,7 @@ void lpuart1_init(void){
 	/* BRR= (256×fLPUART_clk​​)/baudrate
 	 * BRR = (256 * 64M)/115200
 	 * BRR = 142 222(rounded) */
-	LPUART1->BRR = (256U * SYSCLK_FREQ) / LPUART_BAUD;
+	LPUART1->BRR = 142222;//((256U * SYSCLK_FREQ) / LPUART_BAUD);
 /* 3 */
 	/* 00: 1 stop bit */
 	LPUART1->CR2&= ~(3UL << USART_CR2_STOP_Pos);

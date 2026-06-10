@@ -7,7 +7,8 @@ set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/linker/STM32G431RBTX_FLASH.ld)
 
 add_executable(${PROJECT_NAME}
 	${CMAKE_SOURCE_DIR}/Core/Startup/startup_stm32g431rbtx.s
-	${CMAKE_SOURCE_DIR}/Core/Src/interrupt_config.c 
+	${CMAKE_SOURCE_DIR}/Core/Src/interrupt_config.c
+	${CMAKE_SOURCE_DIR}/Core/Src/uart1_config.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/main.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/lpuart1_config.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/peripheral_configs.c 

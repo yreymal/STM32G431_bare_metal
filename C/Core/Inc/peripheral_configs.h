@@ -26,6 +26,8 @@ status_t initGPIOA5();
 
 int delay(const uint32_t timer);
 
+status_t configure_MCO_pinA8();
+
 
 
 

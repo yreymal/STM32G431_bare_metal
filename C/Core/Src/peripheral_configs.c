@@ -7,7 +7,36 @@
 #include "peripheral_configs.h"
 #include "reg_bits_check.h"
 
+status_t configure_MCO_pinA8(){
+	if(!(RCC->AHB2ENR & RCC_AHB2ENR_GPIOAEN)){
+       RCC->AHB2ENR|= RCC_AHB2ENR_GPIOAEN_Msk;
+	}
+	GPIOA->MODER &= ~GPIO_MODER_MODE8_Msk;
+	/* 10: Alternate function mode */
+	GPIOA->MODER|= (2UL<<GPIO_MODER_MODE8_Pos);
+	/* 0: Output push-pull */
+	GPIOA->OTYPER &= ~GPIO_OTYPER_OT0_Msk;
 
+	GPIOA->OSPEEDR &= ~ GPIO_OSPEEDR_OSPEED8_Msk;
+	/* 11: Very high speed */
+	GPIOA->OSPEEDR|= ( 3UL << GPIO_OSPEEDR_OSPEED8_Pos);
+
+	/* 00: No pull-up, pull-down*/
+	GPIOA->PUPDR &= ~ GPIO_PUPDR_PUPD8_Msk;
+    /* 0000: AF0 */
+	GPIOA->AFR[1] &= ~  GPIO_AFRH_AFSEL8_Msk;
+
+	RCC->CFGR &= ~  RCC_CFGR_MCOPRE_Msk;
+	/* 011: MCO is divided by 8 */
+	RCC->CFGR|= (3UL << RCC_CFGR_MCOPRE_Pos);
+
+	RCC->CFGR &= ~ RCC_CFGR_MCOSEL_Msk;
+	/* 0001: SYSCLK system clock selected */
+	/* 0101: Main PLL clock selected */
+	RCC->CFGR|= (1UL << RCC_CFGR_MCOSEL_Pos);
+
+	return STATUS_OK;
+}
 
 int configureUserButton(){
 
@@ -99,7 +128,7 @@ status_t ConfigureClock(){
     //----------------------------------------------------------------------------
 
 	/* clear multi-bits fields before setting */
-	RCC->PLLCFGR&=~(RCC_PLLCFGR_PLLSRC_Pos|RCC_PLLCFGR_PLLN_Pos|RCC_PLLCFGR_PLLM_Pos|RCC_PLLCFGR_PLLR_Pos);
+	RCC->PLLCFGR&=~(RCC_PLLCFGR_PLLSRC_Msk|RCC_PLLCFGR_PLLN_Msk|RCC_PLLCFGR_PLLM_Msk|RCC_PLLCFGR_PLLR_Msk);
 	RCC->PLLCFGR|=((0b11u<<RCC_PLLCFGR_PLLSRC_HSE_Pos) //set HSE as PLL source
 				|(0b10u<<RCC_PLLCFGR_PLLM_Pos)         //set PLLM=3
 				|(16u<<RCC_PLLCFGR_PLLN_Pos)           //set PLLN=16

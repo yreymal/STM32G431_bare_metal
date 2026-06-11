@@ -1,4 +1,4 @@
-#include <uart1_config.h>
+#include "uart1_config.h"
 
 void configure_uart1_pins(){
    RCC->AHB2ENR|= (0x1UL << RCC_AHB2ENR_GPIOCEN_Pos);

@@ -45,6 +45,7 @@ C_INCLUDES := \
 # Core
 C_SOURCES := \
 Core/Src/interrupt_config.c \
+Core/Src/tim6_config.c \
 Core/Src/main.c \
 Core/Src/lpuart1_config.c \
 Core/Src/peripheral_configs.c \

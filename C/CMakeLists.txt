@@ -17,6 +17,7 @@ add_executable(${PROJECT_NAME}
 	${CMAKE_SOURCE_DIR}/Core/Src/syscalls.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/sysmem.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/system_stm32g4xx.c
+	${CMAKE_SOURCE_DIR}/Core/Src/tim6_config.c
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE STM32G431xx)

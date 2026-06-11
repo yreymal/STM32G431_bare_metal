@@ -1,6 +1,6 @@
 #include "tim6_config.h"
 
-volatile uint32_t g_ms_ticks = 0;
+volatile uint8_t g_ms_ticks = 0;
 /* tclk is equal sys clk = 64MHz /
  * update_frequency = TIM6_CLK / ((PSC + 1) * (ARR + 1)
 
@@ -43,8 +43,8 @@ status_t tim6_init(){
    /* enable TIM6 interrupt in NVIC */
    NVIC_EnableIRQ(TIM6_DAC_IRQn);
 
-   /* start TIM6 counter */
-   TIM6->CR1|= TIM_CR1_CEN_Msk;
+//    /* start TIM6 counter */
+//    TIM6->CR1|= TIM_CR1_CEN_Msk;
 
    return STATUS_OK;
 }
@@ -66,3 +66,12 @@ void TIM6_DAC_IRQHandler(void){
      g_ms_ticks = 0;
   }
 }
+
+  void toggle_tim6(void){
+      /* start TIM6 counter */
+      TIM6->CR1^= TIM_CR1_CEN_Msk;
+  }
+
+  uint8_t get_seconds_tim6(){
+    return g_ms_ticks;
+  }

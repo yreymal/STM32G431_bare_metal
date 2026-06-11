@@ -12,6 +12,7 @@ add_executable(${PROJECT_NAME}
 	${CMAKE_SOURCE_DIR}/Core/Src/main.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/lpuart1_config.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/peripheral_configs.c 
+	${CMAKE_SOURCE_DIR}/Core/Src/dynamic_4dig_7seg.c
 	${CMAKE_SOURCE_DIR}/Core/Src/seven_segment.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/stm32g4xx_it.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/syscalls.c 

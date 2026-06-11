@@ -36,6 +36,8 @@ extern "C" {
 #include "seven_segment.h"
 #include "lpuart1_config.h"
 #include "interrupt_config.h"
+#include "tim6_config.h"
+#include "uart1_config.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 

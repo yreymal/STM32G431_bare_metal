@@ -31,6 +31,8 @@ int main(void)
 	if(st!=STATUS_OK)
 		Error_Handler(st);
 
+    //configure_MCO_pinA8();
+    
 	st=configure_7_seg_pins();
 	if(st!=STATUS_OK)
 			Error_Handler(st);
@@ -43,23 +45,33 @@ int main(void)
 	if(st!=STATUS_OK)
 		Error_Handler(st);
 
-  configure_lpuart_pins();
-  lpuart1_init();
+  tim6_init();
+  //configure_lpuart_pins();
+  //lpuart1_init();
+
+  configure_uart1_pins();
+  init_uart1();
 
 	uint8_t i = 0;
+  uint8_t debug_timer = 0;
   while (1)
   {
-	  lpuart1_send_byte((uint8_t)'\n');
+      debug_timer = get_seconds_tim6();
+
+	    send_uart1((uint8_t)(debug_timer +'0'));
 	  	  /* if user button pressed, increase i counter */
 		  if(GPIOC->IDR & (1<<13)){
+       
+        toggle_tim6();
 			  ++i;
 			  /* 7 segment array contains 10 numbers(with 0), if it goes beyond that range, reset the counter */
 			  if(i>9)
 				  i = 0;
 		  }
-		  GPIOA->ODR =  segment_numbers[i];
-		  lpuart1_send_byte('0'+i);
-		  delay(2000000);
+		  GPIOA->ODR =  segment_numbers[debug_timer];
+		  //lpuart1_send_byte(get_seconds_tim6());
+		 // delay(2000000);
+      send_uart1((uint8_t)'\n');
   }
 }
 

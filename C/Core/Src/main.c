@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+static volatile display_refresh_par dis_par;
 int main(void)
 {
    status_t st = STATUS_OK;
@@ -52,28 +53,58 @@ int main(void)
   configure_uart1_pins();
   init_uart1();
 
+  init_portc();
+
+  SysTick_1_Init_ms(SYSCLK_HZ);
+  scheduler_init();
+
 	uint8_t i = 0;
+  uint8_t digit_number= 0;
   uint8_t debug_timer = 0;
+
+ 
+ dis_par.digit_position = 0;
+ dis_par.digit_number = 0;
+
+
+  //scheduler_add_task(send_uart1, 2000, (uint8_t)(debug_timer +'0') );
+  scheduler_add_task(store_seconds_tim6, &dis_par, 100);
+  
+  scheduler_add_task(show_digit_on_display, &dis_par, 200);
+  //scheduler_add_task(get_seconds_tim6, 500, 0);
+
+  //show_digit_on_display(dis_par.digit_number, dis_par.digit_position);
+
+  //scheduler_add_task(test_display, 300, &i);
   while (1)
   {
-      debug_timer = get_seconds_tim6();
-
-	    send_uart1((uint8_t)(debug_timer +'0'));
+    configure_MCO_pinA8();
+    scheduler_run();
+   //test_display(&i);
+    //  debug_timer = get_seconds_tim6();
+    //  digit_number = get_digit();
+  
+	 //   send_uart1((uint8_t)(dis_par.digit_number +'0'));
 	  	  /* if user button pressed, increase i counter */
-		  if(GPIOC->IDR & (1<<13)){
-       
-        toggle_tim6();
-			  ++i;
-			  /* 7 segment array contains 10 numbers(with 0), if it goes beyond that range, reset the counter */
-			  if(i>9)
-				  i = 0;
-		  }
-		  GPIOA->ODR =  segment_numbers[debug_timer];
+		//  if(GPIOC->IDR & (1<<13)){
+   // store_seconds_tim6(&dis_par);
+   // show_digit_on_display(&dis_par);
+  // toggle_tim6();
+     // }
+			//   /* 7 segment array contains 10 numbers(with 0), if it goes beyond that range, reset the counter */
+			//   if(i>9)
+			// 	  i = 0;
+		  
+		 // GPIOA->ODR =  segment_numbers[8];
 		  //lpuart1_send_byte(get_seconds_tim6());
-		 // delay(2000000);
-      send_uart1((uint8_t)'\n');
+		  
+     //show_digit_on_display(debug_timer);
+     //show_digit_on_dis_pos(2, 2);
+     //delay(2000000);
+   //   send_uart1((uint8_t)'\n');
   }
 }
+
 
 /**
   * @brief System Clock Configuration

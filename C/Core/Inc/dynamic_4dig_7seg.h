@@ -48,7 +48,15 @@
 #define ALL_DIGITS (DIGIT1_Msk|DIGIT2_Msk|DIGIT3_Msk|DIGIT4_Msk)
 extern const uint32_t digit_0_4[4];
 
-void show_digit_on_display(uint8_t digit, uint8_t data);
+ typedef struct{
+   uint16_t digit_number;
+   uint8_t digit_position;
+  }display_refresh_par;
+
+void show_digit_on_dis_pos(uint16_t digit, uint8_t data);
+void show_digit_on_display(void* par);
+void test_display(void* par);
+
 status_t init_portc();
 
 #endif /* DYN_4DIG_7SEG_H_ */

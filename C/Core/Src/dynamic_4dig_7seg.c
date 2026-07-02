@@ -2,7 +2,7 @@
 
 
 
-const uint32_t digit_0_4[4] =
+const uint32_t digit_0_3[4] =
 {
     DIGIT1_Msk,
     DIGIT2_Msk,
@@ -19,19 +19,59 @@ const uint32_t digit_0_4[4] =
  t4  0  0  0  1 _ _ _ _ _ _ _ _ _ _ _ _ _
  t - time period
  */
-void show_digit_on_display(uint8_t digit, uint8_t data)
+void show_digit_on_dis_pos(uint16_t digit, uint8_t data)
 {
-    //if(data>9)
-    //data = 9;
+
     GPIOA->ODR &= ~ SEG_7_ALL_MSK;
     GPIOA->ODR =  segment_numbers[data];
 
-    /* switching digits 1-4 */
+    /* switching which digit to turn on 1-4 */
     GPIOC->ODR &= ~ ALL_DIGITS;
-    GPIOC->ODR |= digit_0_4[digit];
+    GPIOC->ODR |= digit_0_3[digit];
 
 
 }
+
+void show_digit_on_display(void* par)
+{
+   display_refresh_par *display_par = (display_refresh_par *)par;
+
+    GPIOA->ODR &= ~ SEG_7_ALL_MSK;
+    if(display_par->digit_number>9)
+        display_par->digit_number =0;
+    GPIOA->ODR =  segment_numbers[display_par->digit_number];
+
+    /* switching which digit to turn on 1-4 */
+    GPIOC->ODR &= ~ ALL_DIGITS;
+    //GPIOC->ODR |= digit_0_3[(par->digit_number)/3];
+     GPIOC->ODR |= digit_0_3[3];
+
+
+}
+
+void test_display(void* par){
+    
+   GPIOA->ODR &= ~ SEG_7_ALL_MSK;
+    GPIOA->ODR =  segment_numbers[3];
+
+    /* switching which digit to turn on 1-4 */
+    GPIOC->ODR &= ~ ALL_DIGITS;
+    GPIOC->ODR |= digit_0_3[1];
+}
+
+
+// void stopwatch_start(uint8_t digit)
+// {
+
+//     GPIOA->ODR &= ~ SEG_7_ALL_MSK;
+//     GPIOA->ODR =  segment_numbers[data];
+
+//     /* switching which digit to turn on 1-4 */
+//     GPIOC->ODR &= ~ ALL_DIGITS;
+//     GPIOC->ODR |= digit_0_3[digit];
+
+
+// }
 
 status_t init_portc()
 {

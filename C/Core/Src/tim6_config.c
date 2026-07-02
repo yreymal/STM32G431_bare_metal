@@ -1,13 +1,9 @@
 #include "tim6_config.h"
+#include "dynamic_4dig_7seg.h"
 
-volatile uint8_t g_ms_ticks = 0;
-/* tclk is equal sys clk = 64MHz /
- * update_frequency = TIM6_CLK / ((PSC + 1) * (ARR + 1)
+volatile uint8_t g_seconds_ticks = 0;
+volatile uint8_t g_tim6_is_running = 0;
 
-   1s = (64*10^6)/((x+1)*(y+1));
-   (64*10^6) = (x+1)*(y+1)
-   x = 64 * 10^2, y(ARR) = 10^4
-*/
 status_t tim6_init(){
     /* enable peripheral clock for TIM6 on APB1 bus */
     RCC->APB1ENR1|= RCC_APB1ENR1_TIM6EN_Msk;
@@ -21,10 +17,10 @@ status_t tim6_init(){
    TIM6->CR1&= ~TIM_CR1_CEN_Msk;
     
    /* set timer prescaler PSC */
-   TIM6->PSC = (6400 - 1);
+   TIM6->PSC = (PSC_DEF - 1);
    
    /* set auto-reload register ARR */
-   TIM6->ARR = (10000 - 1);
+   TIM6->ARR = (ARR_DEF - 1);
 
    /* generate update event manually /
     force the prescaler value to be loaded immediately
@@ -43,8 +39,8 @@ status_t tim6_init(){
    /* enable TIM6 interrupt in NVIC */
    NVIC_EnableIRQ(TIM6_DAC_IRQn);
 
-//    /* start TIM6 counter */
-//    TIM6->CR1|= TIM_CR1_CEN_Msk;
+    /* start TIM6 counter */
+    TIM6->CR1|= TIM_CR1_CEN_Msk;
 
    return STATUS_OK;
 }
@@ -60,10 +56,11 @@ void TIM6_DAC_IRQHandler(void){
      /* clear update interrupt flag */
      TIM6->SR &=~ TIM_SR_UIF_Msk;
 
-     /* increase g_ms_ticks by 1 */
-     ++g_ms_ticks;
-     if(g_ms_ticks>9)
-     g_ms_ticks = 0;
+     /* increase g_seconds_ticks by 1 */
+     ++g_seconds_ticks;
+     ++g_tim6_is_running;
+     if(g_seconds_ticks>9)
+     g_seconds_ticks = 0;
   }
 }
 
@@ -73,5 +70,14 @@ void TIM6_DAC_IRQHandler(void){
   }
 
   uint8_t get_seconds_tim6(){
-    return g_ms_ticks;
+    return g_seconds_ticks;
+  }
+
+   uint8_t get_digit(){
+    return g_tim6_is_running;
+  }
+
+  void store_seconds_tim6(void *par){
+    display_refresh_par *dp = (display_refresh_par *)par;
+     (*dp).digit_number = g_seconds_ticks;
   }

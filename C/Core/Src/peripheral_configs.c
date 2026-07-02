@@ -27,8 +27,8 @@ status_t configure_MCO_pinA8(){
 	GPIOA->AFR[1] &= ~  GPIO_AFRH_AFSEL8_Msk;
 
 	RCC->CFGR &= ~  RCC_CFGR_MCOPRE_Msk;
-	/* 011: MCO is divided by 8 */
-	RCC->CFGR|= (3UL << RCC_CFGR_MCOPRE_Pos);
+	/* 011: MCO is divided by 16 */
+	RCC->CFGR|= (RCC_CFGR_MCOPRE_DIV16);
 
 	RCC->CFGR &= ~ RCC_CFGR_MCOSEL_Msk;
 	/* 0001: SYSCLK system clock selected */
@@ -53,7 +53,7 @@ int configureUserButton(){
 	return 0;
 }
 
-status_t ConfigureClock(){
+status_t ConfigureClock(void){
 
 	/* function return check */
 	 status_t st = STATUS_OK;
@@ -81,9 +81,13 @@ status_t ConfigureClock(){
 	///----------------------------------------------------------------------------
     // 2. Enable HSE
     //----------------------------------------------------------------------------
-
+	/* HSE crystal mode, NOT bypass */
+	RCC->CR &= ~RCC_CR_HSEBYP;
 	/* turning ON HSE */
 	RCC->CR|=(1UL<<RCC_CR_HSEON_Pos);
+
+	
+
 	/* wait until the HSE rdy bit is set, or return with error status */
 	st = isBitSet(&RCC->CR, RCC_CR_HSERDY_Msk, READY_TIMEOUT);
 	if(st!=STATUS_OK)
@@ -107,8 +111,8 @@ status_t ConfigureClock(){
 	/* clean latency bits */
 	FLASH->ACR&=(~FLASH_ACR_LATENCY_Msk);
 	/* setting 2 WS for FLASH */
-	/* 2 WC if CLCK<= 90 MHz, we use 64 MHz */
-	FLASH->ACR|=(FLASH_ACR_LATENCY_2WS<<FLASH_ACR_LATENCY_Pos);
+	/* 3 WC if CLCK<= 120 MHz, we use 100 MHz */
+	FLASH->ACR|=(FLASH_ACR_LATENCY_3WS<<FLASH_ACR_LATENCY_Pos);
 
 	 //----------------------------------------------------------------------------
     // 5. Set bus prescalers
@@ -120,20 +124,20 @@ status_t ConfigureClock(){
     
 	
     //----------------------------------------------------------------------------
-    // 6. Configure PLL: HSE=24 MHz -> SYSCLK=64 MHz
+    // 6. Configure PLL: HSE=24 MHz -> SYSCLK=100 MHz
     //
     // PLLM = 3   => 24 / 3 = 8 MHz
-    // PLLN = 16  => 8 * 16 = 128 MHz
-    // PLLR = 2   => 128 / 2 = 64 MHz
+    // PLLN = 25  => 8 * 25 = 200 MHz
+    // PLLR = 2   => 200 / 2 = 100 MHz
     //----------------------------------------------------------------------------
 
 	/* clear multi-bits fields before setting */
 	RCC->PLLCFGR&=~(RCC_PLLCFGR_PLLSRC_Msk|RCC_PLLCFGR_PLLN_Msk|RCC_PLLCFGR_PLLM_Msk|RCC_PLLCFGR_PLLR_Msk);
 	RCC->PLLCFGR|=((0b11u<<RCC_PLLCFGR_PLLSRC_HSE_Pos) //set HSE as PLL source
-				|(0b10u<<RCC_PLLCFGR_PLLM_Pos)         //set PLLM=3
-				|(16u<<RCC_PLLCFGR_PLLN_Pos)           //set PLLN=16
-				|(0u<<RCC_PLLCFGR_PLLR_Pos)		       //set PLLR=2
-				|(1u<<RCC_PLLCFGR_PLLREN_Pos));        //enabling PLL
+				|(PLLM_DIV_REG_VAL<<RCC_PLLCFGR_PLLM_Pos)         //set PLLM=3
+				|(PLLN_MUL<<RCC_PLLCFGR_PLLN_Pos)           //set PLLN=16
+				|(PLLR_DIV_REG_VAL<<RCC_PLLCFGR_PLLR_Pos)		       //set PLLR=2
+				|(RCC_PLLCFGR_PLLREN_Msk));        //enabling PLL
 	//----------------------------------------------------------------------------
     // 7. Enable PLL
     //----------------------------------------------------------------------------

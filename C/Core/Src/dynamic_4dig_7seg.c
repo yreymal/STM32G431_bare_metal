@@ -55,11 +55,21 @@ void calculate_segments_for_digit(void* par)
         display_par->digit_number = 9999U;
     }
     
-
+   
     display_par->digits_1_4[0] = display_par->digit_number / 1000U;
     display_par->digits_1_4[1] = (display_par->digit_number / 100U) % 10U;
     display_par->digits_1_4[2]= (display_par->digit_number / 10U)  % 10U;
     display_par->digits_1_4[3] = display_par->digit_number % 10U;
+
+    for(uint8_t i = 0; i <3;++i){
+    if(display_par->digits_1_4[i] == 0){
+        display_par->digits_1_4[i] = DISPLAY_BLANK;
+    }
+    else
+    {
+        return;
+    }
+}
 
 }
 
@@ -68,6 +78,7 @@ void show_digit_on_display(void* par)
    display_refresh_par *display_par = (display_refresh_par *)par;
    /* digit to show */
     uint8_t i = display_par->counter;
+    if(display_par->digits_1_4[i]!=DISPLAY_BLANK){
     GPIOA->BSRR  = (SEG_7_ALL_MSK << 16);
     GPIOA->BSRR =  segment_numbers[display_par->digits_1_4[i]];
 
@@ -76,7 +87,7 @@ void show_digit_on_display(void* par)
     GPIOC->BSRR = (ALL_DIGITS << 16);
     //GPIOC->ODR |= digit_masks[(par->digit_number)/3];
      GPIOC->BSRR |= digit_masks[i];
-    
+    }
 ++display_par->counter;
 if(display_par->counter>3)
     display_par->counter = 0;

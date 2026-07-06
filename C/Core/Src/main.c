@@ -74,9 +74,9 @@ segments_init(&dis_par);
 
   
     
-     scheduler_add_task(store_seconds_tim6, &dis_par, 800);
+     scheduler_add_task(store_seconds_tim6, &dis_par, 400);
      scheduler_add_task(calculate_segments_for_digit, &dis_par, 200 );
-     scheduler_add_task(show_digit_on_display, &dis_par, 2);
+     scheduler_add_task(show_digit_on_display, &dis_par, 4);
   //scheduler_add_task(get_seconds_tim6, 500, 0);
 
   //show_digit_on_display(dis_par.digit_number, dis_par.digit_position);

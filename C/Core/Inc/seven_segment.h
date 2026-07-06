@@ -49,10 +49,10 @@
 #define DIGIT_SEVEN		~((GPIO_ODR_OD4_Msk|GPIO_ODR_OD5_Msk|GPIO_ODR_OD6_Msk))
 #define DIGIT_EIGHT		~(SEG_7_ALL_MSK)
 #define DIGIT_NINE		((GPIO_ODR_OD11_Msk) & SEG_7_ALL_MSK)
+#define DISPLAY_BLANK   (10U)
 
 
-
-static const uint32_t segment_numbers[10] = {
+static const uint32_t segment_numbers[11] = {
 		                DIGIT_ZERO,     
 						DIGIT_ONE,
 						DIGIT_TWO,
@@ -62,7 +62,8 @@ static const uint32_t segment_numbers[10] = {
 						DIGIT_SIX,		
 						DIGIT_SEVEN,
 						DIGIT_EIGHT,	
-						DIGIT_NINE
+						DIGIT_NINE,
+						DISPLAY_BLANK
 						};
 
 

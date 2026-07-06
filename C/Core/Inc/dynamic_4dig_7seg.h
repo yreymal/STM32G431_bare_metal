@@ -8,6 +8,7 @@
 #ifndef DYN_4DIG_7SEG_H_
 #define DYN_4DIG_7SEG_H_
 
+
 #include <stm32g431xx.h>
 #include "status.h"
 #include "seven_segment.h"
@@ -45,18 +46,21 @@
  #define DIGIT3_Msk (1UL<<10UL)
  #define DIGIT4_Msk (1UL<<12UL)
 
+
 #define ALL_DIGITS (DIGIT1_Msk|DIGIT2_Msk|DIGIT3_Msk|DIGIT4_Msk)
 extern const uint32_t digit_0_4[4];
 
  typedef struct{
    uint16_t digit_number;
-   uint8_t digit_position;
+   uint8_t digits_1_4[4];
+   uint8_t counter;
   }display_refresh_par;
 
 void show_digit_on_dis_pos(uint16_t digit, uint8_t data);
 void show_digit_on_display(void* par);
 void test_display(void* par);
-
+void calculate_segments_for_digit(void* par);
+void segments_init(void* par);
 status_t init_portc();
 
 #endif /* DYN_4DIG_7SEG_H_ */

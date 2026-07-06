@@ -58,19 +58,25 @@ int main(void)
   SysTick_1_Init_ms(SYSCLK_HZ);
   scheduler_init();
 
+  configure_MCO_pinA8();
+
 	uint8_t i = 0;
   uint8_t digit_number= 0;
   uint8_t debug_timer = 0;
 
  
- dis_par.digit_position = 0;
+ //dis_par.digit_position = 0;
  dis_par.digit_number = 0;
 
-
+segments_init(&dis_par);
   //scheduler_add_task(send_uart1, 2000, (uint8_t)(debug_timer +'0') );
-  scheduler_add_task(store_seconds_tim6, &dis_par, 100);
+ 
+
   
-  scheduler_add_task(show_digit_on_display, &dis_par, 200);
+    
+     scheduler_add_task(store_seconds_tim6, &dis_par, 800);
+     scheduler_add_task(calculate_segments_for_digit, &dis_par, 200 );
+     scheduler_add_task(show_digit_on_display, &dis_par, 2);
   //scheduler_add_task(get_seconds_tim6, 500, 0);
 
   //show_digit_on_display(dis_par.digit_number, dis_par.digit_position);
@@ -78,8 +84,8 @@ int main(void)
   //scheduler_add_task(test_display, 300, &i);
   while (1)
   {
-    configure_MCO_pinA8();
-    scheduler_run();
+   
+   scheduler_run();
    //test_display(&i);
     //  debug_timer = get_seconds_tim6();
     //  digit_number = get_digit();

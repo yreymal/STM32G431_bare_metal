@@ -1,7 +1,7 @@
 #include "tim6_config.h"
 #include "dynamic_4dig_7seg.h"
 
-volatile uint8_t g_seconds_ticks = 0;
+volatile uint16_t g_seconds_ticks = 0;
 volatile uint8_t g_tim6_is_running = 0;
 
 status_t tim6_init(){
@@ -59,8 +59,6 @@ void TIM6_DAC_IRQHandler(void){
      /* increase g_seconds_ticks by 1 */
      ++g_seconds_ticks;
      ++g_tim6_is_running;
-     if(g_seconds_ticks>9)
-     g_seconds_ticks = 0;
   }
 }
 
@@ -79,5 +77,7 @@ void TIM6_DAC_IRQHandler(void){
 
   void store_seconds_tim6(void *par){
     display_refresh_par *dp = (display_refresh_par *)par;
-     (*dp).digit_number = g_seconds_ticks;
+    (*dp).digit_number = g_seconds_ticks;
+   
+     
   }

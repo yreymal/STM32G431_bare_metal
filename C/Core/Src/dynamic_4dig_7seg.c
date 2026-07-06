@@ -2,7 +2,7 @@
 
 
 
-const uint32_t digit_0_3[4] =
+static const uint32_t digit_masks[4] =
 {
     DIGIT1_Msk,
     DIGIT2_Msk,
@@ -19,44 +19,78 @@ const uint32_t digit_0_3[4] =
  t4  0  0  0  1 _ _ _ _ _ _ _ _ _ _ _ _ _
  t - time period
  */
-void show_digit_on_dis_pos(uint16_t digit, uint8_t data)
+void show_digit_on_dis_pos(uint16_t pos, uint8_t data)
 {
-
+   
     GPIOA->ODR &= ~ SEG_7_ALL_MSK;
     GPIOA->ODR =  segment_numbers[data];
 
     /* switching which digit to turn on 1-4 */
     GPIOC->ODR &= ~ ALL_DIGITS;
-    GPIOC->ODR |= digit_0_3[digit];
+    GPIOC->ODR |= digit_masks[pos];
 
+
+}
+
+void segments_init(void* par){
+  display_refresh_par *display_par = (display_refresh_par*)par;
+  
+
+
+    display_par->digits_1_4[0] = 0;
+    display_par->digits_1_4[1] = 0;
+    display_par->digits_1_4[2]= 0;
+    display_par->digits_1_4[3] =0;
+ 
+   display_par->counter = 0;
+
+}
+void calculate_segments_for_digit(void* par)
+{   
+  
+  //if(((display_refresh_par*)par)->digit_number)
+  display_refresh_par *display_par = (display_refresh_par*)par;
+  
+  if (display_par->digit_number > 9999U) {
+        display_par->digit_number = 9999U;
+    }
+    
+
+    display_par->digits_1_4[0] = display_par->digit_number / 1000U;
+    display_par->digits_1_4[1] = (display_par->digit_number / 100U) % 10U;
+    display_par->digits_1_4[2]= (display_par->digit_number / 10U)  % 10U;
+    display_par->digits_1_4[3] = display_par->digit_number % 10U;
 
 }
 
 void show_digit_on_display(void* par)
 {
    display_refresh_par *display_par = (display_refresh_par *)par;
-
-    GPIOA->ODR &= ~ SEG_7_ALL_MSK;
-    if(display_par->digit_number>9)
-        display_par->digit_number =0;
-    GPIOA->ODR =  segment_numbers[display_par->digit_number];
+   /* digit to show */
+    uint8_t i = display_par->counter;
+    GPIOA->BSRR  = (SEG_7_ALL_MSK << 16);
+    GPIOA->BSRR =  segment_numbers[display_par->digits_1_4[i]];
 
     /* switching which digit to turn on 1-4 */
-    GPIOC->ODR &= ~ ALL_DIGITS;
-    //GPIOC->ODR |= digit_0_3[(par->digit_number)/3];
-     GPIOC->ODR |= digit_0_3[3];
+  
+    GPIOC->BSRR = (ALL_DIGITS << 16);
+    //GPIOC->ODR |= digit_masks[(par->digit_number)/3];
+     GPIOC->BSRR |= digit_masks[i];
+    
+++display_par->counter;
+if(display_par->counter>3)
+    display_par->counter = 0;
+   }
 
-
-}
 
 void test_display(void* par){
     
-   GPIOA->ODR &= ~ SEG_7_ALL_MSK;
-    GPIOA->ODR =  segment_numbers[3];
-
+   GPIOA->BSRR  = (SEG_7_ALL_MSK << 16);
+    GPIOA->BSRR =  segment_numbers[4];
+  
     /* switching which digit to turn on 1-4 */
-    GPIOC->ODR &= ~ ALL_DIGITS;
-    GPIOC->ODR |= digit_0_3[1];
+    GPIOC->BSRR = (ALL_DIGITS << 16);
+    GPIOC->BSRR = digit_masks[3];
 }
 
 
@@ -68,7 +102,7 @@ void test_display(void* par){
 
 //     /* switching which digit to turn on 1-4 */
 //     GPIOC->ODR &= ~ ALL_DIGITS;
-//     GPIOC->ODR |= digit_0_3[digit];
+//     GPIOC->ODR |= digit_masks[digit];
 
 
 // }

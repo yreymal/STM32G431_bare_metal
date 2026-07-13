@@ -7,6 +7,8 @@
 #include "peripheral_configs.h"
 #include "reg_bits_check.h"
 
+
+
 status_t configure_MCO_pinA8(){
 	if(!(RCC->AHB2ENR & RCC_AHB2ENR_GPIOAEN)){
        RCC->AHB2ENR|= RCC_AHB2ENR_GPIOAEN_Msk;
@@ -121,7 +123,11 @@ status_t ConfigureClock(void){
 	/* clear peripheria prescale bits */
 	/* PPR1 - APB1, PPR2 - APB2, HPRE - AHB */
 	RCC->CFGR&=~(RCC_CFGR_PPRE1_Msk|RCC_CFGR_PPRE2_Msk|RCC_CFGR_HPRE_Msk);
-    
+	/* set clock buses deviders */
+
+    RCC->CFGR|= (APB1_PRESCALER_REG /* APB1 pres = 1 */
+				|APB2_PRESCALER_REG /* APB2 pres = 1 */
+				|AHB_PRESCALER_REG); /* HPRE pres = 1 */
 	
     //----------------------------------------------------------------------------
     // 6. Configure PLL: HSE=24 MHz -> SYSCLK=100 MHz

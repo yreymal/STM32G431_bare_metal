@@ -22,6 +22,7 @@ add_executable(${PROJECT_NAME}
 	${CMAKE_SOURCE_DIR}/Core/Src/tim6_config.c
 	${CMAKE_SOURCE_DIR}/Core/Src/scheduler.c
 	${CMAKE_SOURCE_DIR}/Core/Src/sys_tick.c
+	${CMAKE_SOURCE_DIR}/Core/Src/timer8.c
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE STM32G431xx)

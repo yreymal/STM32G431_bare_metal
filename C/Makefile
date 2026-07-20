@@ -45,9 +45,11 @@ C_INCLUDES := \
 # Core
 C_SOURCES := \
 Core/Src/interrupt_config.c \
+Core/Src/tim6_config.c \
 Core/Src/main.c \
 Core/Src/lpuart1_config.c \
 Core/Src/peripheral_configs.c \
+Core/Src/dynamic_4dig_7seg.c \
 Core/Src/seven_segment.c \
 Core/Src/stm32g4xx_it.c \
 Core/Src/syscalls.c \

@@ -21,7 +21,7 @@ status_t configure_7_seg_pins(void){
 			       |(0b11<<GPIO_MODER_MODE5_Pos)
 				   |(0b11<<GPIO_MODER_MODE6_Pos)
 				   |(0b11<<GPIO_MODER_MODE7_Pos)
-				   |(0b11<<GPIO_MODER_MODE8_Pos)
+				   |(0b11<<GPIO_MODER_MODE11_Pos)
 				   |(0b11<<GPIO_MODER_MODE9_Pos)
 				   |(0b11<<GPIO_MODER_MODE10_Pos)
 			);
@@ -30,7 +30,7 @@ status_t configure_7_seg_pins(void){
 				  |(1UL<<GPIO_MODER_MODE5_Pos)
 				  |(1UL<<GPIO_MODER_MODE6_Pos)
 				  |(1UL<<GPIO_MODER_MODE7_Pos)
-				  |(1UL<<GPIO_MODER_MODE8_Pos)
+				  |(1UL<<GPIO_MODER_MODE11_Pos)
 				  |(1UL<<GPIO_MODER_MODE9_Pos)
 				  |(1UL<<GPIO_MODER_MODE10_Pos)
 			);
@@ -55,7 +55,7 @@ status_t configure_7_seg_pins(void){
 					 |(0b11<<GPIO_OSPEEDR_OSPEED9_Pos)
 					 |(0b11<<GPIO_OSPEEDR_OSPEED10_Pos)
 			);
-    /* 00: No pull-up, pull-down, 2 bit fields */
+    /* 00: No pull-up/pull-down, 2 bit fields */
 	GPIOA->PUPDR&=~((0b11<<GPIO_PUPDR_PUPD4_Pos)
 			       |(0b11<<GPIO_PUPDR_PUPD5_Pos)
 				   |(0b11<<GPIO_PUPDR_PUPD6_Pos)

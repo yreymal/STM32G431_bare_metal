@@ -13,8 +13,8 @@
  * TIM8_PERIOD_TICKS   = timer period in CNT ticks, for example 5000
  */
 #define TIM8_AUTORELOAD_VALUE   (TIM8_PERIOD_TICKS - 1U)
-#define TIM8_COMPARE1_VALUE     (TIM8_AUTORELOAD_VALUE / 2U)
-#define TIM8_COMPARE2_VALUE     (TIM8_AUTORELOAD_VALUE)
+#define TIM8_COMPARE1_VALUE     2U//(TIM8_AUTORELOAD_VALUE / 2U)
+#define TIM8_COMPARE2_VALUE     5U//(TIM8_AUTORELOAD_VALUE)
 
 void TIM8_CH1_CH2_PC6_PC7_OutputCompare_Init(void)
 {
@@ -48,10 +48,13 @@ void TIM8_CH1_CH2_PC6_PC7_OutputCompare_Init(void)
                        (1U << OUT_COM_CH2));
 
     /*
-     * Low speed is enough for LEDs.
+     * hight speed
      */
     GPIOC->OSPEEDR &= ~((3U << (OUT_COM_CH1 * 2U)) |
                         (3U << (OUT_COM_CH2 * 2U)));
+
+    GPIOC->OSPEEDR |=  ((2U << (OUT_COM_CH1 * 2U)) |
+                        (2U << (OUT_COM_CH2 * 2U)));
 
     /*
      * No pull-up, no pull-down.

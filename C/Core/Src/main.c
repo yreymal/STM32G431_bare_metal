@@ -20,6 +20,7 @@
 #include "main.h"
 
 static volatile display_refresh_par dis_par;
+static volatile display_refresh_par display_cfg;
 int main(void)
 {
    status_t st = STATUS_OK;
@@ -60,6 +61,8 @@ int main(void)
 
   configure_MCO_pinA8();
 
+  TIM8_CH1_CH2_PC6_PC7_OutputCompare_Init();
+  
 	uint8_t i = 0;
   uint8_t digit_number= 0;
   uint8_t debug_timer = 0;

@@ -10,9 +10,10 @@
 
 /* tclk is sys_clk/1 = 100MHz  /
  * update_frequency = TIM8_CLK / ((PSC + 1) * (ARR + 1)
+   10kHz
 */
-#define TIM8_PSC_VALUE     10000
-#define TIM8_PERIOD_TICKS  10000
+#define TIM8_PSC_VALUE    100U
+#define TIM8_PERIOD_TICKS  50U
 void TIM8_CH1_CH2_PC6_PC7_OutputCompare_Init(void);
 
 #endif /* TIMER_8_H_ */

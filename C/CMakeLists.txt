@@ -7,22 +7,15 @@ set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/linker/STM32G431RBTX_FLASH.ld)
 
 add_executable(${PROJECT_NAME}
 	${CMAKE_SOURCE_DIR}/Core/Startup/startup_stm32g431rbtx.s
-	${CMAKE_SOURCE_DIR}/Core/Src/interrupt_config.c
-	${CMAKE_SOURCE_DIR}/Core/Src/uart1_config.c 
+	${CMAKE_SOURCE_DIR}/Core/Src/interrupt_config.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/main.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/lpuart1_config.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/peripheral_configs.c 
-	${CMAKE_SOURCE_DIR}/Core/Src/dynamic_4dig_7seg.c
 	${CMAKE_SOURCE_DIR}/Core/Src/seven_segment.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/stm32g4xx_it.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/syscalls.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/sysmem.c 
 	${CMAKE_SOURCE_DIR}/Core/Src/system_stm32g4xx.c
-	${CMAKE_SOURCE_DIR}/Core/Src/scheduler.c
-	${CMAKE_SOURCE_DIR}/Core/Src/tim6_config.c
-	${CMAKE_SOURCE_DIR}/Core/Src/scheduler.c
-	${CMAKE_SOURCE_DIR}/Core/Src/sys_tick.c
-	${CMAKE_SOURCE_DIR}/Core/Src/timer8.c
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE STM32G431xx)

@@ -27,7 +27,6 @@ extern "C" {
 #endif
 
 #define DEBUG_MODE
-
 /* Includes ------------------------------------------------------------------*/
 //#include "stm32g4xx_hal.h"
 #include <stdint.h>
@@ -35,12 +34,8 @@ extern "C" {
 #include "peripheral_configs.h"
 #include "status.h"
 #include "seven_segment.h"
-#include "dynamic_4dig_7seg.h"
 #include "lpuart1_config.h"
 #include "interrupt_config.h"
-#include "tim6_config.h"
-#include "uart1_config.h"
-#include "scheduler.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 

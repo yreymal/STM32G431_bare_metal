@@ -1,66 +1,18 @@
 {
   "version": 3,
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 22,
-    "patch": 0
-  },
   "configurePresets": [
     {
-      "name": "host-debug",
-      "displayName": "Host unit tests (Debug)",
-      "generator": "Unix Makefiles",
-      "binaryDir": "${sourceDir}/build/host-debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "BUILD_HOST_TESTS": "ON",
-        "BUILD_STM32_FIRMWARE": "OFF"
-      }
-    },
-    {
-      "name": "stm32-debug",
-      "displayName": "STM32G431RB firmware (Debug)",
-      "generator": "Unix Makefiles",
-      "binaryDir": "${sourceDir}/build/stm32-debug",
-      "toolchainFile": "${sourceDir}/cmake/arm-none-eabi-toolchain.cmake",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "BUILD_HOST_TESTS": "OFF",
-        "BUILD_STM32_FIRMWARE": "ON"
-      }
-    },
-    {
-      "name": "stm32-release",
-      "displayName": "STM32G431RB firmware (Release)",
-      "inherits": "stm32-debug",
-      "binaryDir": "${sourceDir}/build/stm32-release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
+      "name": "stm32G431",
+      "generator": "Ninja",
+      "binaryDir": "build",
+      "toolchainFile": "cmake/arm-gcc-toolchain.cmake"
     }
   ],
   "buildPresets": [
     {
-      "name": "host-debug",
-      "configurePreset": "host-debug"
-    },
-    {
-      "name": "stm32-debug",
-      "configurePreset": "stm32-debug"
-    },
-    {
-      "name": "stm32-release",
-      "configurePreset": "stm32-release"
-    }
-  ],
-  "testPresets": [
-    {
-      "name": "host-debug",
-      "configurePreset": "host-debug",
-      "output": {
-        "outputOnFailure": true
-      }
+      "name": "stm32G431-build",
+      "configurePreset": "stm32G431",
+      "cleanFirst": true
     }
   ]
 }

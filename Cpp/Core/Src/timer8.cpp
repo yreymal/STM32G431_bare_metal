@@ -12,6 +12,8 @@
 
 namespace {
 
+// Written by the ISR and potentially read by normal application code.
+volatile std::uint32_t compare1InterruptCount = 0U;
 // GPIO pin numbers are used to calculate register field positions. Every GPIO
 // MODER field is two bits; every AFR field is four bits.
 constexpr std::uint32_t kChannel1Pin = 6U;
@@ -20,10 +22,11 @@ constexpr std::uint32_t kAlternateFunction = 4U;
 
 // Output-compare demo configuration. With the 100 MHz APB2 timer clock this
 // gives a 1 MHz counter and a 20 kHz repetition period.
-constexpr std::uint32_t kPrescaler = 100U;
-constexpr std::uint32_t kPeriodTicks = 50U;
-constexpr std::uint32_t kCompare1 = 2U;
-constexpr std::uint32_t kCompare2 = 5U;
+constexpr std::uint32_t kPrescaler = 1'000U;
+constexpr std::uint32_t kPeriodTicks = 65'535U;
+constexpr std::uint32_t kCompare1 = 1'000U;
+constexpr std::uint32_t kCompare2 = 10U;
+constexpr std::uint32_t kCompareIntervalTicks = 25'000U;
 
 static_assert(kPrescaler > 0U);
 static_assert(kPeriodTicks > 0U);
@@ -94,6 +97,13 @@ Status initializeOutputCompare()
     TIM8->EGR = TIM_EGR_UG_Msk;
     TIM8->SR = 0U;
 
+    // TIM8 capture/compare channels share this NVIC interrupt line.
+    // Priority 3 places it below TIM6 priority 2 but above the slower
+    // button and SysTick interrupts.
+    NVIC_SetPriority(TIM8_CC_IRQn, 3U);
+    NVIC_ClearPendingIRQ(TIM8_CC_IRQn);
+    NVIC_EnableIRQ(TIM8_CC_IRQn);
+
     // Section 5: basic register readback before reporting successful init.
     if ((TIM8->PSC != (kPrescaler - 1U))
         || (TIM8->ARR != (kPeriodTicks - 1U))
@@ -111,6 +121,10 @@ Status startOutputCompare()
     TIM8->CNT = 0U;
     TIM8->EGR = TIM_EGR_UG_Msk;
     TIM8->SR = 0U;
+    // Clear both levels of stale interrupt state before enabling the source.
+    NVIC_ClearPendingIRQ(TIM8_CC_IRQn);
+    TIM8->DIER|=TIM_DIER_CC1IE_Msk;
+
     TIM8->BDTR |= TIM_BDTR_MOE_Msk;
     TIM8->CR1 |= TIM_CR1_CEN_Msk;
 
@@ -125,8 +139,17 @@ void stopOutputCompare()
 {
     // Clear MOE first so external waveforms stop before the counter stops.
     RCC->APB2ENR |= RCC_APB2ENR_TIM8EN_Msk;
+
+      // Stop generating interrupt requests 
+    TIM8->DIER &= ~TIM_DIER_CC1IE_Msk;
+
     TIM8->BDTR &= ~TIM_BDTR_MOE_Msk;
     TIM8->CR1 &= ~TIM_CR1_CEN_Msk;
+
+    TIM8->SR=0U;
+    NVIC_ClearPendingIRQ(TIM8_CC_IRQn);
+
+    
 }
 
 void enterSafeState()
@@ -141,3 +164,20 @@ void enterSafeState()
 }
 
 }  // namespace timer8
+
+extern "C" void TIM8_CC_IRQHandler(){
+     // The vector is shared by all TIM8 compare channels, so verify both
+    // the channel flag and its interrupt-enable bit.
+    if(((TIM8->SR & TIM_SR_CC1IF_Msk)!=0U) 
+        && (TIM8->DIER & TIM_DIER_CC1IE_Msk)!=0){
+
+            TIM8->SR &= ~TIM_SR_CC1IF_Msk;
+            std::uint32_t nextCompare = TIM8->CCR1 + kCompareIntervalTicks;
+
+            if(nextCompare >= kPeriodTicks){
+                nextCompare-=kPeriodTicks;
+            }
+            TIM8->CCR1 = nextCompare;
+            ++compare1InterruptCount;
+        }
+}
